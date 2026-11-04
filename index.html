@@ -31,7 +31,7 @@
 <!-- App só de água gelada (sessão AG1): o mesmo código do index.html, com o js/interface/modo_agua.js depois do nucleo.js.
      Plataforma comum (_plataforma-hvac): tokens, base, componentes e folha do memorial. O build embute tudo no HTML único. -->
 <style>
-/* ==== plataforma v0.5.1: css/base.css ==== */
+/* ==== plataforma v0.6.0: css/base.css ==== */
 /* ---- importado: fontes.css ---- */
 /* Fontes embutidas (gerado por _plataforma-hvac\codigo\ferramentas\gera_fontes.py; não editar à mão).
    Arquivos woff2 do Google Fonts, subconjunto latin, sem alteração; letras fora dele usam a fonte seguinte da lista.
@@ -522,7 +522,7 @@ button.kpi-c:hover { border-color: var(--prim); }
 
 </style>
 <style>
-/* ==== plataforma v0.5.1: css/impressao.css ==== */
+/* ==== plataforma v0.6.0: css/impressao.css ==== */
 /* Plataforma HVAC: memorial em formato de folha e regras de impressão (o PDF sai pela impressão do navegador). */
 /* v0.5.0: a folha é papel e não flutua (sem sombra, só a borda); dentro dela ficam as fontes e os pesos da v0.4.1, para o PDF
    sair igual (a tela troca para IBM Plex; o memorial muda de fonte só numa etapa própria, com o Francisco) */
@@ -791,7 +791,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 <body>
 <!-- Plataforma: página (topo, trilha, área da tela, faixa), namespace e formatação -->
 <script>
-/* ==== plataforma v0.5.1: js/interface/pagina.js ==== */
+/* ==== plataforma v0.6.0: js/interface/pagina.js ==== */
 /* Plataforma HVAC. Página comum: topo (marca, modo aprendizado, tema, comandos), trilha, área da tela, faixa de resultado,
    camada sobre a tela, campo de arquivo e captura de erro de JavaScript. Desde a v0.4.0, também o botão Menu, a barra de
    passos e o balão de dica do celular: nascem ocultos (base.css) e só aparecem em tela estreita.
@@ -800,7 +800,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.plataforma = { versao: '0.5.1' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
+  H.plataforma = { versao: '0.6.0' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
 
   /* Erro de JavaScript fica visível na página (e aparece no teste automático) */
   window.onerror = function (msg, arq, linha) {
@@ -837,12 +837,12 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.5.1: js/nucleo.js ==== */
+/* ==== plataforma v0.6.0: js/nucleo.js ==== */
 /* Namespace único do app. Módulos: dados (tabelas), util, motor (cálculo, sem DOM), ui (tela). */
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.7.0';
+  H.versao = '0.8.0';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -858,7 +858,7 @@ window.HVAC.modo = 'agua';
 
 </script>
 <script>
-/* ==== plataforma v0.5.1: js/util/formatacao.js ==== */
+/* ==== plataforma v0.6.0: js/util/formatacao.js ==== */
 /* Formatação numérica (padrão brasileiro: vírgula decimal) e utilidades de texto. */
 (function (H) {
   'use strict';
@@ -2287,6 +2287,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2298,6 +2299,7 @@ window.HVAC.modo = 'agua';
           "kv": 340,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2309,6 +2311,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2320,6 +2323,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2331,6 +2335,7 @@ window.HVAC.modo = 'agua';
           "kv": 25,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2342,6 +2347,7 @@ window.HVAC.modo = 'agua';
           "kv": 60,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2353,6 +2359,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2364,6 +2371,7 @@ window.HVAC.modo = 'agua';
           "kv": 20,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2375,6 +2383,7 @@ window.HVAC.modo = 'agua';
           "kv": 40,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2386,6 +2395,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2397,6 +2407,7 @@ window.HVAC.modo = 'agua';
           "kv": 25,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2408,6 +2419,7 @@ window.HVAC.modo = 'agua';
           "kv": 60,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2419,6 +2431,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2430,6 +2443,7 @@ window.HVAC.modo = 'agua';
           "kv": 20,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2441,6 +2455,7 @@ window.HVAC.modo = 'agua';
           "kv": 40,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2452,6 +2467,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2463,6 +2479,7 @@ window.HVAC.modo = 'agua';
           "kv": 40,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2474,6 +2491,7 @@ window.HVAC.modo = 'agua';
           "kv": 100,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2485,6 +2503,7 @@ window.HVAC.modo = 'agua';
           "kv": null,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2496,6 +2515,7 @@ window.HVAC.modo = 'agua';
           "kv": 4,
           "alturaEstatica": null,
           "valvulaControle": true,
+          "valvulaBalanceamento": false,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         },
         {
@@ -2507,6 +2527,7 @@ window.HVAC.modo = 'agua';
           "kv": 6.3,
           "alturaEstatica": null,
           "valvulaControle": false,
+          "valvulaBalanceamento": true,
           "obs": "valor ilustrativo do exemplo — usar o catálogo do equipamento selecionado"
         }
       ]
@@ -2537,7 +2558,7 @@ window.HVAC = window.HVAC || {};
  ],
  "ar": {
   "premissas": {
-   "altitude": 1060,
+   "altitude": 1160,
    "tAr": 20,
    "rhoManual": null,
    "muManual": null,
@@ -3175,6 +3196,7 @@ window.HVAC = window.HVAC || {};
       kv: { t: 'num', p: null, nulo: true, pos: true, rotulo: 'Kv', un: 'm³/h', casas: 3 },
       alturaEstatica: { t: 'num', p: null, nulo: true, min: 0, rotulo: 'Altura estática', un: 'm', casas: 2 },
       valvulaControle: { t: 'bool', p: false, rotulo: 'É a válvula de controle' },
+      valvulaBalanceamento: { t: 'bool', p: false, rotulo: 'É a válvula de balanceamento' },
       obs: { t: 'txt', p: '', rotulo: 'Observação' }
     },
 
@@ -3191,8 +3213,9 @@ window.HVAC = window.HVAC || {};
 
     // ---------------- dutos de ar: bloco "ar" (premissas, método e critérios) ----------------
     arPremissas: {
-      altitude: { t: 'num', p: 1060, min: 0, max: 5000, rotulo: 'Altitude', un: 'm', casas: 0,
-                  fonte: 'Premissa de projeto: Brasília (1 060 m), a mesma altitude do app de difusores e da carga térmica' },
+      altitude: { t: 'num', p: 1160, min: 0, max: 5000, rotulo: 'Altitude', un: 'm', casas: 0,
+                  fonte: 'Premissa de projeto: Brasília, 1 160 m, a elevação da estação 867150 (BRASILIA, 2000-2023) na ficha de clima do ASHRAE Handbook Fundamentals 2025 (SI), p. 1; ' +
+                    'a mesma da carga térmica e do app de difusores - CONFERIR com a folha oficial (o PDF é impressão de página web de terceiro)' },
       tAr: { t: 'num', p: 20, livre: true, min: 0, max: 50, rotulo: 'Temperatura do ar no duto', un: '°C', casas: 1,
              fonte: 'Premissa do app: 20 °C, a temperatura do ar-padrão (NBR 16401-1:2024, 3.8, p. 3, PDF 13). Ar seco: a umidade é desprezada na massa específica. A viscosidade usa a ASHRAE Fundamentals 2021, cap. 21, p. 21.6, Eq. 21 e texto, válida de 4 a 38 °C' },
       rhoManual: { t: 'num', p: null, nulo: true, min: 0.5, max: 1.5, rotulo: 'Massa específica do ar (manual)', un: 'kg/m³', casas: 4,
@@ -3871,6 +3894,11 @@ window.HVAC = window.HVAC || {};
   function txt(v) { return (v === null || v === undefined) ? '' : String(v); }
   function fixo(n, casas) { return n.toFixed(casas).replace('.', ','); }
 
+  // Kv (ASHRAE S&E 2016 (SI), cap. 47, Eq. 1, PDF 805): Kv = Q · (SG ÷ (0,01 · Δp))^0,5, Q em m³/h, Δp em kPa (a legenda diz
+  // kg/cm², os exemplos da p. 47.10 usam kPa), SG = ρ ÷ 1 000 (premissa, KV1)
+  function dpKv(q, kv, rho) { return 100 * Math.pow(q / kv, 2) * rho / 1000; }
+  function kvDe(q, dp, rho) { return (numero(q) && numero(dp) && dp > 0) ? q * Math.sqrt(100 * rho / 1000 / dp) : null; }
+
   // --- premissas: fluido, limites e parâmetros da bomba ---
   function premissas(P, tab) {
     var s = P.sistema || {}, c = P.criterios || {}, b = P.bomba || {}, pc = PADROES.criterios, pb = PADROES.bomba;
@@ -4039,8 +4067,9 @@ window.HVAC = window.HVAC || {};
   function equipamento(e, T, est, pr) {
     var r = {
       trecho: txt(e.trecho), descricao: txt(e.descricao), tag: txt(e.tag), dpCat: num(e.dpCat), qCat: num(e.qCat), kv: num(e.kv),
-      alturaEstatica: num(e.alturaEstatica), valvulaControle: e.valvulaControle === true, obs: txt(e.obs),
-      semTrecho: false, orfa: false, indiceTrecho: -1, qTrecho: null, criterio: '', dp: null, erroDp: '', estaticaIgnorada: false
+      alturaEstatica: num(e.alturaEstatica), valvulaControle: e.valvulaControle === true, valvulaBalanceamento: e.valvulaBalanceamento === true,
+      obs: txt(e.obs), semTrecho: false, orfa: false, indiceTrecho: -1, qTrecho: null, criterio: '', dp: null, erroDp: '', estaticaIgnorada: false,
+      xi: null
     };
     var k = M.rede.chave(e.trecho);
     if (k === '') { r.semTrecho = true; return r; }
@@ -4060,7 +4089,11 @@ window.HVAC = window.HVAC || {};
       if (pr.ok) { r.dp = pr.rho * pr.g * he / 1000; }
     } else if (r.kv !== null) {
       if (!(r.kv > 0)) { r.erroDp = 'Kv inválido'; }
-      else if (pr.ok) { r.dp = 100 * Math.pow(r.qTrecho / r.kv, 2) * pr.rho / 1000; }
+      else if (pr.ok) {
+        r.dp = dpKv(r.qTrecho, r.kv, pr.rho);
+        // KV2: ξ equivalente na velocidade do trecho; não entra na soma (o ΔP já está no trecho)
+        if (numero(T[i].v) && T[i].v > 0) { r.xi = 2 * r.dp * 1000 / (pr.rho * T[i].v * T[i].v); }
+      }
     } else if (r.qCat !== null) {
       if (r.qCat > 0 && r.dpCat !== null) { r.dp = r.dpCat * Math.pow(r.qTrecho / r.qCat, 2); }
       else { r.erroDp = 'Qcat/ΔPcat inválido'; }
@@ -4145,6 +4178,7 @@ window.HVAC = window.HVAC || {};
     var CX = (ag.conexoes || []).map(function (c) { return conexao(c, T, est, pr, tab, tk, opc); });
     var EQ = (ag.equipamentos || []).map(function (e) { return equipamento(e, T, est, pr); });
     var somaK = Object.create(null), somaKVolta = Object.create(null), semK = Object.create(null), somaEq = Object.create(null), semDp = Object.create(null), valv = Object.create(null), estIgn = Object.create(null);
+    var bal = Object.create(null), balMarc = Object.create(null), duas = Object.create(null);
     var orfas = 0, k;
     CX.forEach(function (c) {
       if (c.semTrecho) { return; }
@@ -4160,6 +4194,9 @@ window.HVAC = window.HVAC || {};
       if (e.dp !== null) { somaEq[k] = (somaEq[k] || 0) + e.dp; }
       if (e.erroDp !== '') { semDp[k] = true; }
       if (e.valvulaControle && e.dp !== null) { valv[k] = (valv[k] || 0) + e.dp; }
+      // KV3, KV4: válvula de balanceamento; mais de uma no trecho soma os ΔP abertos (como a D18 na de controle)
+      if (e.valvulaBalanceamento) { balMarc[k] = true; if (e.dp !== null) { bal[k] = (bal[k] || 0) + e.dp; } }
+      if (e.valvulaControle && e.valvulaBalanceamento) { duas[k] = true; }
       if (e.estaticaIgnorada) { estIgn[k] = true; }
     });
 
@@ -4221,6 +4258,7 @@ window.HVAC = window.HVAC || {};
         : (!(t.L > 0) && t.dpEquip === 0) ? 'sem comprimento'
         : semK[k] ? 'acessório sem K (Conexoes)'
         : semDp[k] ? 'equipamento sem ΔP (Equipamentos)'
+        : duas[k] ? 'equipamento marcado como válvula de controle e de balanceamento'
         : (t.atrito && t.re >= M.atrito.RE_LAMINAR && t.atrito.residuo > M.atrito.RESIDUO_MAX) ? 'Colebrook não convergiu'   // D22: no laminar f = 64/Re
         : 'OK';
       t.situacao = t.consistencia !== 'OK' ? 'DADOS: ' + t.consistencia
@@ -4245,6 +4283,8 @@ window.HVAC = window.HVAC || {};
         if (ta !== '') { t.avisos.push({ tipo: 'autoridade', texto: ta }); }
       }
       if (estIgn[k]) { t.avisos.push({ tipo: 'estaticaIgnorada', texto: M.agua.TEXTO_ESTATICA_IGNORADA }); }
+      // KV4: o Kv de ajuste só vale no trecho terminal (premissa da D23: o excesso é dissipado no próprio terminal)
+      if (balMarc[k] && !t.terminal) { t.avisos.push({ tipo: 'balanceamentoForaTerminal', texto: M.agua.TEXTO_BAL_FORA_TERMINAL }); }
       cont.avisos += t.avisos.length;
     }
 
@@ -4283,9 +4323,18 @@ window.HVAC = window.HVAC || {};
       t = T[i];
       if (!t.terminal) { continue; }
       var exc = t.excesso, pct = (exc !== null && dpCrit !== 0) ? exc / dpCrit : null;
+      // KV3: Kv de ajuste = Q · √(100 · SG ÷ (ΔP aberta + excesso)); no crítico, o Kv da válvula aberta; sem válvula marcada,
+      // o do dispositivo que dissipa só o excesso (no crítico, nenhum)
+      k = est.chave[i];
+      var marc = balMarc[k] === true, dpAb = marc ? (bal[k] || 0) : 0, kvAj = null, kvAb = null;
+      if (exc !== null && pr.ok && t.consistencia === 'OK') {
+        if (marc) { kvAb = kvDe(t.q, dpAb, pr.rho); kvAj = kvDe(t.q, dpAb + exc, pr.rho); }
+        else if (exc >= 0.005) { kvAj = kvDe(t.q, exc, pr.rho); }
+      }
       terminais.push({
         n: terminais.length + 1, id: t.id, circuito: t.circuito, descricao: t.descricao, q: t.q, dpAcum: t.dpAcum,
         excesso: exc, excessoM: (exc !== null && pr.ok) ? exc * 1000 / (pr.rho * pr.g) : null, fracao: pct, autoridade: t.autoridade,
+        valvulaBalanceamento: marc, dpBalAberta: marc ? dpAb : null, kvBalAberta: kvAb, kvAjuste: kvAj,
         obs: exc === null ? '' : (exc < 0.005 ? 'circuito crítico (válvula totalmente aberta)'
           : (pct > 0.5 ? 'excesso > 50 % do crítico: avaliar redução de DN do ramal ou válvula independente de pressão'
             : 'dissipar na válvula de balanceamento'))
@@ -4383,7 +4432,8 @@ window.HVAC = window.HVAC || {};
 
   M.agua = { PADROES: PADROES, LIMITE_REL: LIMITE_REL, MU_LIMITE_BOMBA: MU_LIMITE_BOMBA,
     TEXTO_ESTATICA_IGNORADA: 'altura estática ignorada: em circuito fechado ela não entra na altura da bomba',
-    premissas: premissas, calcular: calcular, sensibilidade: sensibilidade, projetoPadrao: projetoPadrao };
+    TEXTO_BAL_FORA_TERMINAL: 'válvula de balanceamento fora do trecho terminal: o Kv de ajuste não é calculado',
+    dpKv: dpKv, kvDe: kvDe, premissas: premissas, calcular: calcular, sensibilidade: sensibilidade, projetoPadrao: projetoPadrao };
 })(window.HVAC);
 
 </script>
@@ -4410,6 +4460,8 @@ window.HVAC = window.HVAC || {};
   var CALADOS_AR = ['tolVazaoEquip', 'rhoCat'];
   // bomba existente (sessão AG1, v0.6.0): idem
   var CALADOS_BOMBA = ['qNominal', 'hDisp', 'tolVazaoBomba'];
+  // válvula de balanceamento (KV3, v0.8.0): idem
+  var CALADOS_EQUIP = ['valvulaBalanceamento'];
 
   function objeto(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
   function tem(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
@@ -4615,7 +4667,8 @@ window.HVAC = window.HVAC || {};
             rel.push({ onde: rot, campo: 'linha', nivel: 'substituido', valorArquivo: mostra(linha), valorAdotado: '(retirada)', motivo: 'Linha que não é um objeto: retirada.' });
             return;
           }
-          P.agua[lista].push(grupo(defs, linha, rot, rel, (v1 && lista === 'trechos') ? { calados: ['unidade'] } : null));
+          P.agua[lista].push(grupo(defs, linha, rot, rel, (v1 && lista === 'trechos') ? { calados: ['unidade'] }
+            : (lista === 'equipamentos' ? { calados: CALADOS_EQUIP } : null)));
         });
       });
       // formato 2: cadastro de unidades e dutos de ar (no formato 1, ausentes: entram vazios e com os padrões, sem mais linhas)
@@ -4787,7 +4840,7 @@ window.HVAC = window.HVAC || {};
     RHO_PADRAO: 1.2,          // kg/m³ (NBR 16401-1:2024, 3.8)
     T_PADRAO: 20,             // °C
     MU_PADRAO: 1.204 / 66400, // Pa·s (Fundamentals 2021, cap. 21, Eq. 21)
-    ALTITUDE_PADRAO: 1060,    // m (Brasília)
+    ALTITUDE_PADRAO: 1160,    // m (Brasília: ficha ASHRAE 2025, estação 867150; C4, v0.8.0)
     T_RECINTO_PADRAO: 24,     // °C
     UR_PADRAO: 50,            // %
 
@@ -5506,7 +5559,7 @@ window.HVAC = window.HVAC || {};
 </script>
 <!-- Plataforma: componentes e casca -->
 <script>
-/* ==== plataforma v0.5.1: js/interface/componentes.js ==== */
+/* ==== plataforma v0.6.0: js/interface/componentes.js ==== */
 /* Plataforma HVAC. Componentes do guia de interface: campo com estado, selos, valor calculado, seletor, segmentado, passos,
    cabeçalho de tela, indicador, bloco recolhível, barras, tabela de passos e, desde a v0.4.0, a lista de cartões do celular.
    Só montam HTML; não conhecem app nem motor.
@@ -5668,7 +5721,7 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.5.1: js/interface/casca.js ==== */
+/* ==== plataforma v0.6.0: js/interface/casca.js ==== */
 /* Plataforma HVAC. Casca comum dos apps: estado, armazenamento, rotas, trilha, faixa de resultado, gaveta, janela, paleta de comandos,
    tema, modo aprendizado, arquivo de projeto com relatório de importação e impressão do memorial; desde a v0.4.0, o celular
    (Menu, barra de passos, Voltar, dica por toque, tabelas que rolam, memorial em escala, teclado), só com a tela estreita.
@@ -6369,6 +6422,8 @@ window.HVAC = window.HVAC || {};
   function idDe(caminho) { return 'c-' + String(caminho).replace(/^projeto\./, '').replace(/\./g, '-'); }
   // resultado que pode ser mostrado como válido: fluido certo, algum trecho e nenhum erro de dados (ressalva R5 da A1)
   function valido(R) { return R.premissas.ok && R.contagem.trechos > 0 && R.contagem.dados === 0; }
+  // linha do terminal (tabela de balanceamento do motor) de um trecho terminal
+  function terminalDe(R, t) { return R.terminais.filter(function (x) { return x.id === t.id; })[0] || null; }
   // selo de um dado pelo texto da fonte, com o texto sempre presente
   function seloFonte(fonte) {
     if (!fonte) { return ''; }
@@ -6432,7 +6487,7 @@ window.HVAC = window.HVAC || {};
   }
   function plural(q, um, varios) { return q + ' ' + (q === 1 ? um : varios); }
 
-  X.id = idDe; X.valido = valido; X.seloFonte = seloFonte; X.linhaErosao = linhaErosao; X.nomeFluido = nomeFluido; X.textoSituacao = textoSituacao; X.plural = plural; X.marca = marca;
+  X.id = idDe; X.valido = valido; X.terminalDe = terminalDe; X.seloFonte = seloFonte; X.linhaErosao = linhaErosao; X.nomeFluido = nomeFluido; X.textoSituacao = textoSituacao; X.plural = plural; X.marca = marca;
   X.campoDef = campoDef; X.comSelo = comSelo; X.comNota = comNota;
   // opções de um seletor de unidade do cadastro; o valor gravado que não está no cadastro aparece marcado
   X.opcoesUnidade = function (P, valor) {
@@ -6619,7 +6674,8 @@ window.HVAC = window.HVAC || {};
   }
   function avisosCurtos(t) {
     return (t.avisos || []).map(function (a) {
-      var curto = a.tipo === 'autoridade' ? a.texto.split(':')[0] : (a.tipo === 'velocidadeBaixa' ? 'velocidade baixa' : 'altura estática ignorada');
+      var curto = a.tipo === 'autoridade' ? a.texto.split(':')[0] : (a.tipo === 'velocidadeBaixa' ? 'velocidade baixa'
+        : (a.tipo === 'balanceamentoForaTerminal' ? 'balanceamento fora do terminal' : 'altura estática ignorada'));
       return '<span class="aviso-linha" title="' + esc(a.texto) + '">aviso: ' + esc(curto) + '</span>';
     }).join('');
   }
@@ -6805,12 +6861,14 @@ window.HVAC = window.HVAC || {};
       { t: 'Kv<br>m³/h', k: 'kv', tipo: 'num', w: 62 }
     ];
     if (aberto) { colEq.push({ t: 'Altura estática<br>m', k: 'alturaEstatica', tipo: 'num', w: 84 }); }
-    colEq.push({ t: 'Válvula de<br>controle', k: 'valvulaControle', tipo: 'bool', w: 76 }, { t: 'Observação', k: 'obs', tipo: 'txt', w: 180 });
+    colEq.push({ t: 'Válvula de<br>controle', k: 'valvulaControle', tipo: 'bool', w: 76 }, { t: 'Válvula de<br>balanceamento', k: 'valvulaBalanceamento', tipo: 'bool', w: 96 },
+      { t: 'Observação', k: 'obs', tipo: 'txt', w: 180 });
     var tabEq = G.montar({
       id: 'tab-eq', base: 'projeto.agua.equipamentos', linhas: linhasEq, cat: CAT.equipamento, colunas: colEq,
       resultados: [
         { t: 'Critério aplicado', w: 190, v: function (x) { return esc(x.criterio) + (x.erroDp ? ' <span class="sit dados">' + esc(x.erroDp) + '</span>' : ''); } },
-        { t: 'ΔP adotado<br>kPa', w: 76, num: true, v: function (x) { return n(x.dp, 3); } }
+        { t: 'ΔP adotado<br>kPa', w: 76, num: true, v: function (x) { return n(x.dp, 3); } },
+        { t: 'ξ equivalente', w: 76, num: true, v: function (x) { return x.xi === null ? '—' : n(x.xi, 1); } }
       ],
       res: function (j) { return R.equipamentos[j]; },
       acoes: function (j) { return '<button type="button" class="mini perigo" data-acao="eq-del" data-i="' + j + '" title="Excluir o equipamento" aria-label="Excluir o equipamento">×</button>'; },
@@ -6820,7 +6878,8 @@ window.HVAC = window.HVAC || {};
     var b3 = tabEq + '<div class="acoes barra-tab"><button type="button" class="botao" data-acao="eq-novo" data-i="' + i + '"' + (chave !== '' ? '' : ' disabled') + '>Acrescentar equipamento</button>' +
       '<span class="fraco">ΔP dos equipamentos no trecho = ' + n(r.dpEquip, 3) + ' kPa</span></div>' +
       '<p class="fraco">Prioridade do dado: ' + (aberto ? 'altura estática (ρ · g · h); ' : '') + 'Kv; ΔP de catálogo corrigido pela vazão de catálogo; ΔP de catálogo. O equipamento não leva o fator ida e volta. ' +
-        '"Válvula de controle" só serve ao aviso de autoridade.</p>' +
+        'Catálogo em Cv: Kv = 0,862 × Cv. "Válvula de controle" só serve ao aviso de autoridade; "Válvula de balanceamento", ao Kv de ajuste do terminal. ' +
+        'ξ equivalente = 2 × ΔP ÷ (ρ × v²), na velocidade do trecho: compara a válvula com o K das conexões e não entra na soma.</p>' +
       (!aberto && comEstatica ? '<p class="msg-tela alerta">' + esc(M.agua.TEXTO_ESTATICA_IGNORADA) + '. ' + plural(comEstatica, 'equipamento deste trecho tem', 'equipamentos deste trecho têm') +
         ' altura estática gravada; o campo só aparece em circuito aberto. <button type="button" class="botao leve" data-acao="estatica-limpar" data-i="' + i + '">Apagar a altura estática deste trecho</button></p>' : '');
 
@@ -6834,6 +6893,7 @@ window.HVAC = window.HVAC || {};
         calc('ΔP dos equipamentos', n(r.dpEquip, 3), 'kPa', 'dpEquip') + calc('ΔP do trecho', n(r.dpTrecho, 3), 'kPa', 'dpTrecho') + calc('ΔP acumulado', n(r.dpAcum, 3), 'kPa', 'dpAcum') +
         (r.terminal && X.valido(R) ? calc('Excesso do terminal', n(r.excesso, 3), 'kPa', 'excesso') : '') +
         (r.autoridade !== null && X.valido(R) ? calc('Autoridade da válvula', n(r.autoridade, 3), '', 'autoridade') : '') +
+        (r.terminal && X.valido(R) && X.terminalDe(R, r) && X.terminalDe(R, r).kvAjuste !== null ? calc('Kv de ajuste do balanceamento', n(X.terminalDe(R, r).kvAjuste, 3), 'm³/h', 'kvAjuste') : '') +
         calc('Menor DN que atende', r.menorDN || '—', '', 'menorDN') + '</div>' +
       '<table class="verif"><thead><tr><th>Verificação</th><th class="num">Valor</th><th class="num">Limite</th><th>Resultado</th></tr></thead><tbody>' +
         '<tr><td>Velocidade máxima (' + (r.dnmm !== null && r.dnmm <= pr.dnLimite ? 'até o DN limite' : 'erosão, ' + n(X.linhaErosao(pr.horas).horas, 0) + ' h/ano') + ')</td><td class="num">' + n(r.v, 2) + ' m/s</td><td class="num">' + n(r.vMax, 2) + ' m/s</td><td>' + esc(r.sitV || '—') + '</td></tr>' +
@@ -7543,6 +7603,8 @@ window.HVAC = window.HVAC || {};
   var F_NBR = 'NBR 16401-1:2024, 12.2.8 (p. 33, PDF 43)';
   var F_AUT = 'ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 47, p. 47.8 (PDF 804): o diferencial do ramal inclui o dispositivo de balanceamento. ' +
     'Faixa de 0,30 a 0,50 (para razão de perda de carga de 2:1 entre ramal e prumada): cap. 13, p. 13.15 (PDF 273)';
+  var F_KV = 'ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 47, Eq. 1, p. 47.9 (PDF 805)';
+  var F_AUT_BASES = 'ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.14 e 13.15 (PDF 272 e 273); cap. 47, p. 47.9 (PDF 805)';
 
   function n(v, casas) { return f.num(v, casas); }
   function numero(v) { return typeof v === 'number' && isFinite(v); }
@@ -7669,10 +7731,21 @@ window.HVAC = window.HVAC || {};
     var L = [];
     R.equipamentos.forEach(function (e) {
       if (e.indiceTrecho !== i) { return; }
-      L.push(p(e.descricao || e.tag || 'Equipamento', e.criterio, '', e.dp === null ? (e.erroDp || '—') : n(e.dp, 3) + ' kPa', e.valvulaControle ? 'Marcado como válvula de controle' : ''));
+      var marcas = [];
+      if (e.valvulaControle) { marcas.push('Marcado como válvula de controle'); }
+      if (e.valvulaBalanceamento) { marcas.push('Marcado como válvula de balanceamento'); }
+      var nome = e.descricao || e.tag || 'Equipamento';
+      L.push(p(nome, e.criterio, '', e.dp === null ? (e.erroDp || '—') : n(e.dp, 3) + ' kPa', marcas.join('. ')));
+      // KV2: ξ equivalente na velocidade do trecho; não entra na soma
+      if (numero(e.xi)) {
+        L.push(p('ξ equivalente de ' + nome, '2 × ΔP × 1 000 ÷ (ρ × v²)', '2 × ' + n(e.dp, 3) + ' × 1 000 ÷ (' + n(R.premissas.rho, 2) + ' × ' + n(t.v, 3) + '²)', n(e.xi, 1),
+          'Compara a válvula com o K das conexões; não entra na soma'));
+      }
     });
     if (!L.length) { L.push(p('Equipamentos', 'nenhum equipamento lançado neste trecho', '', '0 kPa')); }
-    L.push(p('ΔP dos equipamentos', 'soma (sem o fator ida e volta)', '', n(t.dpEquip, 3) + ' kPa', 'Q em m³/h e Kv em m³/h para 1 bar; o equipamento existe uma vez no trecho'));
+    L.push(p('ΔP dos equipamentos', 'soma (sem o fator ida e volta)', '', n(t.dpEquip, 3) + ' kPa',
+      'Q em m³/h e Kv em m³/h para 1 bar (convenção do app; Δp em kPa como nos exemplos da p. 47.10) (ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 47, Eq. 1, p. 47.9, PDF 805; ' +
+      'SG = ρ ÷ 1 000, premissa); o equipamento existe uma vez no trecho'));
     return L;
   }
   function passoTrecho(t) {
@@ -7722,6 +7795,15 @@ window.HVAC = window.HVAC || {};
            p('Sem contar o excesso', 'ΔP da válvula ÷ ΔP do trecho', n(t.dpValvula, 3) + ' ÷ ' + n(t.dpTrecho, 3), n(t.dpValvula / t.dpTrecho, 3),
              'Se parte do excesso for dissipada a montante, a autoridade real fica entre os dois valores'),
            p('Limite em uso', 'autoridade mínima', '', n(pr.autoridadeMin, 2), 'Abaixo dele o trecho recebe um aviso; a situação não muda')];
+    }
+    else if (g === 'kvAjuste') {
+      var tm = X.terminalDe(R, t);
+      titulo = 'Kv de ajuste do balanceamento'; if (!tm || !numero(tm.kvAjuste)) { return null; } valor = n(tm.kvAjuste, 3) + ' m³/h';
+      var dpAb = tm.dpBalAberta === null ? 0 : tm.dpBalAberta, dpAj = dpAb + tm.excesso;
+      L = [p('ΔP da válvula de balanceamento aberta', 'soma dos equipamentos marcados como válvula de balanceamento no trecho', '', n(dpAb, 3) + ' kPa', 'Sem válvula marcada, 0'),
+           p('ΔP no ajuste', 'aberta + excesso do terminal', n(dpAb, 3) + ' + ' + n(tm.excesso, 3), n(dpAj, 3) + ' kPa'),
+           p('Kv de ajuste', 'Q × √(100 × SG ÷ ΔP no ajuste), SG = ρ ÷ 1 000', n(t.q, 3) + ' × √(100 × ' + n(pr.rho / 1000, 4) + ' ÷ ' + n(dpAj, 3) + ')', n(tm.kvAjuste, 3) + ' m³/h',
+             F_KV + '. No circuito crítico a válvula fica aberta. A posição (voltas ou %) sai da curva do fabricante')];
     }
     else if (g === 'menorDN') {
       var m = t.menor; titulo = 'Menor DN que atende'; valor = t.menorDN || '—'; if (!m || !numero(m.dVelErosao)) { return null; }
@@ -7839,7 +7921,7 @@ window.HVAC = window.HVAC || {};
   };
   X.F_RELACAO = 'NBR 16401-1:2024, 12.2.7 (p. 33, PDF 43): relação de 0,04 kW/kW entre a energia elétrica do bombeamento e a energia térmica transportada, desejável, porém nem sempre viável';
   X.F_AUT_VARIAVEL = 'ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.16 (PDF 274)';
-  X.F_AUTORIDADE = F_AUT; X.F_ATRITO = F_ATRITO; X.F_DARCY = F_DARCY; X.F_TUBO_NOVO = F_NOVO; X.F_ENVELHECIMENTO = F_ENV; X.F_NBR_1228 = F_NBR;
+  X.F_KV = F_KV; X.F_AUT_BASES = F_AUT_BASES; X.F_AUTORIDADE = F_AUT; X.F_ATRITO = F_ATRITO; X.F_DARCY = F_DARCY; X.F_TUBO_NOVO = F_NOVO; X.F_ENVELHECIMENTO = F_ENV; X.F_NBR_1228 = F_NBR;
   X.passosBomba = function (R) { var P = passosBomba(R); return ORDEM_BOMBA.map(function (k) { return P[k]; }); };
 
   X.conta = function (chave, E, U) {
@@ -8428,8 +8510,18 @@ window.HVAC = window.HVAC || {};
       { t: 'Excesso ÷<br>crítico', num: true, v: function (x) { return x.fracao === null ? '—' : n(x.fracao * 100, 1) + ' %'; } },
       { t: 'Autoridade<br>da válvula', num: true, v: function (x) { return x.autoridade === null ? '—' : num('aut.' + x.id, n(x.autoridade, 3), folha ? '' : 't.' + indice(R, x.id) + '.autoridade'); } },
       { t: 'Autoridade<br>sem o excesso', num: true, v: function (x) { var t = R.trechos[indice(R, x.id)]; return x.autoridade === null || !t ? '—' : n(t.dpValvula / t.dpTrecho, 3); } },
+      { t: 'Kv aberta<br>m³/h', num: true, v: function (x) { return x.kvBalAberta === null ? '—' : n(x.kvBalAberta, 3); } },
+      { t: 'Kv de ajuste<br>m³/h', num: true, v: function (x) { return x.kvAjuste === null ? '—' : num('kvaj.' + x.id, n(x.kvAjuste, 3), folha ? '' : 't.' + indice(R, x.id) + '.kvAjuste'); } },
       { t: 'Observação', v: function (x) { return esc(x.obs); } }
     ], R.terminais);
+  }
+  // KV3: nota do Kv de ajuste, abaixo da tabela de balanceamento
+  function notaKvAjuste(R, folha) {
+    return '<p class="' + (folha ? 'nota' : 'fraco') + '" data-g="nota-kv-ajuste">Kv de ajuste = vazão × √(100 × SG ÷ (ΔP da válvula de balanceamento aberta + excesso)), SG = ρ ÷ 1 000: ' +
+      'o Kv em que a válvula deve ficar para dissipar o excesso; a posição (voltas ou %) sai da curva do fabricante. No circuito crítico ela fica aberta. ' +
+      'Sem válvula marcada no terminal, é o Kv de um dispositivo que dissipa só o excesso. ' +
+      (folha ? '<b>Premissa:</b>' : '<span class="selo premissa">premissa</span>') + ' SG = ρ ÷ 1 000 kg/m³: a fonte só diz "1 para água". ' +
+      (folha ? esc(X.F_KV) + '.' : X.seloFonte(X.F_KV)) + '</p>';
   }
   function notaAutoridade(R, folha) {
     var pr = R.premissas, def = CAT.criterios.autoridadeMin;
@@ -8440,6 +8532,9 @@ window.HVAC = window.HVAC || {};
       // D26: onde a margem é dissipada
       (folha ? '<b>Premissa:</b>' : '<span class="selo premissa">premissa</span>') + ' a margem é suposta retirada na bomba, e não no balanceamento dos terminais. ' +
       (folha ? esc(X.F_AUTORIDADE) + '.' : X.seloFonte(X.F_AUTORIDADE)) +
+      // TX12: as duas bases da autoridade no Handbook
+      ' O cap. 13 mede a autoridade sobre o ΔP do sistema (Eq. 17; 30 % a 50 %, com razão de ΔP ramal/prumada de 2:1) e o cap. 47 a define como ' +
+      'ΔP da válvula ÷ (ΔP da válvula + ΔP do ramal) (0,25 a 0,5); o app usa a do ramal. ' + (folha ? esc(X.F_AUT_BASES) + '.' : X.seloFonte(X.F_AUT_BASES)) +
       // D28: o Handbook não dá faixa geral para a bomba de velocidade variável; a nota só relata o caso que ele descreve
       (pr.controle === 'variavel' ? ' <span data-g="nota-d28">Com bomba de velocidade variável e controle pelo ΔP do ramal, o Handbook relata bons resultados com autoridade de 50 % a 100 %, medida sobre a válvula mais a serpentina, ' +
         'em serpentinas com ΔT de 6,7 °C; a base desse percentual não é a deste app, e o mínimo em uso não muda. ' + (folha ? esc(X.F_AUT_VARIAVEL) + '.' : X.seloFonte(X.F_AUT_VARIAVEL)) + '</span>' : '') + '</p>';
@@ -8545,7 +8640,7 @@ window.HVAC = window.HVAC || {};
   }
 
   X.oQueFalta = oQueFalta; X.cartaoFalta = cartaoFalta; X.tabCaminho = tabCaminho; X.textoCaminho = textoCaminho; X.tabTrechosA = tabTrechosA; X.tabTrechosB = tabTrechosB;
-  X.NOTA_TRECHOS = NOTA_TRECHOS; X.NOTA_ARRED = NOTA_ARRED; X.rugosidade = rugosidade; X.tabTerminais = tabTerminais; X.notaAutoridade = notaAutoridade; X.tabMenor = tabMenorComIndice; X.avisos = avisos; X.listaAvisos = listaAvisos;
+  X.NOTA_TRECHOS = NOTA_TRECHOS; X.NOTA_ARRED = NOTA_ARRED; X.rugosidade = rugosidade; X.tabTerminais = tabTerminais; X.notaKvAjuste = notaKvAjuste; X.notaAutoridade = notaAutoridade; X.tabMenor = tabMenorComIndice; X.avisos = avisos; X.listaAvisos = listaAvisos;
   X.tabelaLeitura = tabela; X.numMarcado = num;
 
   // ------------------------------------------------------------ a tela
@@ -8571,7 +8666,7 @@ window.HVAC = window.HVAC || {};
         ' com erro de dados. Tabela só de leitura: o ID abre o trecho.</p><h3 class="sub-t">Vazão, tubo e escoamento</h3>' + tabTrechosA(R, false) +
         '<h3 class="sub-t">Perda de carga e verificações</h3>' + tabTrechosB(R, false) + '<p class="fraco" style="margin-top:10px">' + NOTA_TRECHOS + ' ' + NOTA_ARRED + '</p></div>' : '') +
       (ok ? '<div class="cartao" data-g="balanceamento"><h2>Balanceamento</h2><p class="fraco" style="margin-bottom:10px">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' +
-        tabTerminais(R, false) + notaAutoridade(R, false) + '</div>' : '') +
+        tabTerminais(R, false) + notaKvAjuste(R, false) + notaAutoridade(R, false) + '</div>' : '') +
       (c.trechos && R.premissas.ok ? cartaoMenor(R, U) : '') +
       '<div class="cartao" data-g="avisos"><h2>Avisos</h2>' + listaAvisos(R) + '</div>' +
       '<div class="acoes"><a class="botao prim" href="#/memorial">Abrir o memorial</a><a class="botao" href="#/rede">Voltar à rede</a></div></div>';
@@ -9743,7 +9838,9 @@ window.HVAC = window.HVAC || {};
         'o tê de derivação com redução (ramal de diâmetro menor que o tronco) sai do Crane TP-410M (2009), p. 2-15 (PDF 37): Eq. 2-37 na ida (dividindo) e Eq. 2-35 na volta (convergindo, K ≥ 0); ' +
         'as demais conexões e o K informado repetem o K da ida'],
       ['ΔP dos equipamentos', 'catálogo: ΔP cat ; catálogo corrigido: ΔP cat × (Q ÷ Q cat)² ; Kv: 100 × (Q ÷ Kv)² × ρ ÷ 1 000 ; altura estática (só em circuito aberto): ρ · g · h ÷ 1 000',
-        'Q em m³/h, Kv em m³/h para 1 bar e ΔP em kPa; o equipamento existe uma vez no trecho'],
+        'Q em m³/h, Kv em m³/h para 1 bar (convenção do app) e ΔP em kPa; Kv: ' + X.F_KV + ', com SG = ρ ÷ 1 000; o equipamento existe uma vez no trecho'],
+      ['ξ equivalente da válvula', '2 × ΔP × 1 000 ÷ (ρ · v²) = 200 × (3 600 × A)² ÷ Kv²', 'Não entra na soma: compara a válvula com o K das conexões'],
+      ['Kv de ajuste do balanceamento', 'Q × √(100 × ρ ÷ 1 000 ÷ (ΔP aberta + excesso))', 'cap. 47, Eq. 1; no circuito crítico, a válvula aberta'],
       ['ΔP do trecho e acumulado', 'trecho = distribuído + conexões + equipamentos ; acumulado = soma dos trechos, da bomba até o trecho', ''],
       ['Circuito crítico e excesso', 'crítico = maior acumulado entre os terminais ; excesso = crítico − acumulado do terminal', 'Com empate, vale o primeiro terminal na ordem da tabela'],
       ['Critérios de dimensionamento', 'até o DN limite: velocidade máxima ; acima dele: velocidade máxima por erosão e perda máxima por metro, com o tubo novo',
@@ -9797,8 +9894,11 @@ window.HVAC = window.HVAC || {};
       { t: 'Altura estática<br>m', num: true, v: function (e) { return n(e.alturaEstatica, 2); } },
       { t: 'Vazão do trecho<br>m³/h', num: true, v: function (e) { return n(e.qTrecho, 3); } },
       { t: 'Válvula de<br>controle', v: function (e) { return e.valvulaControle ? 'sim' : 'não'; } },
-      { t: 'ΔP adotado<br>kPa', num: true, v: function (e) { return e.dp === null ? esc(e.erroDp || '—') : n(e.dp, 3); } }
-    ], L) + '<p class="nota">Os dados de catálogo, o Kv e a altura estática são informados pelo projetista, a partir do catálogo de cada equipamento.</p>';
+      { t: 'Válvula de<br>balanceamento', v: function (e) { return e.valvulaBalanceamento ? 'sim' : 'não'; } },
+      { t: 'ΔP adotado<br>kPa', num: true, v: function (e) { return e.dp === null ? esc(e.erroDp || '—') : n(e.dp, 3); } },
+      { t: 'ξ equivalente', num: true, v: function (e) { return e.xi === null ? '—' : n(e.xi, 1); } }
+    ], L) + '<p class="nota">Os dados de catálogo, o Kv e a altura estática são informados pelo projetista, a partir do catálogo de cada equipamento. ' +
+      'Catálogo em Cv: Kv = 0,862 × Cv (ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 47, p. 47.9, PDF 805).</p>';
   }
   function secaoBomba(R) {
     var b = R.bomba, dentro = b.relacao <= M.agua.LIMITE_REL;
@@ -9911,7 +10011,7 @@ window.HVAC = window.HVAC || {};
         h2('Conexões') + tabConexoes(R) +
         h2('Equipamentos') + tabEquipamentos(R) +
         (ok ? h2('Bomba e circuito crítico') + secaoBomba(R) +
-              h2('Balanceamento') + '<p class="nota">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' + X.tabTerminais(R, true) + X.notaAutoridade(R, true)
+              h2('Balanceamento') + '<p class="nota">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' + X.tabTerminais(R, true) + X.notaKvAjuste(R, true) + X.notaAutoridade(R, true)
             : h2('Bomba, circuito crítico e balanceamento') + X.cartaoFalta(R, true)) +
         h2('Avisos') + X.listaAvisos(R) : '') +
       (mod.ar ?
