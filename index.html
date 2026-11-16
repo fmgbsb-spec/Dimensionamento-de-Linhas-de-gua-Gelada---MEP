@@ -602,6 +602,12 @@ main:has(#tab-dutos) { max-width: 1480px; }
 .msg-tela.erro { border-color: var(--erro); }
 .msg-tela.alerta { border-color: var(--alerta); }
 .barra-tab { margin: 12px 0; }
+/* figuras das curvas (v0.9.0, TC4): as do PDF da ASHRAE, preto sobre branco; no tema escuro, invertidas */
+.figs-curvas { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0; }
+.fig-curva { margin: 0; max-width: 360px; }
+.fig-curva img { display: block; max-width: 100%; height: auto; background: #fff; border: 1px solid var(--linha); }
+.fig-curva figcaption { font-size: 12.5px; margin-top: 4px; }
+:root[data-tema="escuro"] .fig-curva img { filter: invert(1); }
 /* seletor da rede de ar ao lado dos botões dela */
 .barra-rede { align-items: flex-end; }
 .barra-rede .campo { min-width: 280px; margin: 0; }
@@ -842,7 +848,7 @@ window.HVAC = window.HVAC || {};
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.8.0';
+  H.versao = '0.9.1';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -1250,6 +1256,7 @@ window.HVAC.modo = 'agua';
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Cotovelo 90°", "metodo": "FIXO", "param": "0.9", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (short radius) - conexão lisa; K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Curva 90° raio longo", "metodo": "FIXO", "param": "0.6", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (long radius) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Cotovelo 45°", "metodo": "CRANE", "param": "16", "fonte": "Crane TP-410: K = n·fT (fT de aço comercial por DN) (n = 16) - conservador para tubo liso; multiplicador conferido no Crane TP-410M (edição métrica, 2009), p. A-28 a A-30 (PDF 122 a 124); premissa declarada: fT de aço comercial aplicado a tubo liso (lado conservador)" },
+      { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Curva 45° raio longo", "metodo": "T4_25", "param": "cot45", "fonte": "ASHRAE Fund. 2021 cap. 22, Tab. 4 (solda/flange; Hydraulic Institute 1990), p. 22.6 (PDF 642), pelo DN equivalente; abaixo de 25 mm, o valor de 25 mm; premissa declarada: tabela de aço aplicada a outro material" },
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Tê — passagem direta", "metodo": "FIXO", "param": "0.5", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (straight-through flow) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Tê — derivação", "metodo": "FIXO", "param": "1.8", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (flow through branch) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "Cobre", "uniao": "Solda (brasagem)", "item": "Válvula globo", "metodo": "FIXO", "param": "10", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (globe valve open)" },
@@ -1266,6 +1273,7 @@ window.HVAC.modo = 'agua';
       { "familia": "PPR", "uniao": "Termofusão", "item": "Cotovelo 90°", "metodo": "FIXO", "param": "0.9", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (short radius) - conexão lisa; K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PPR", "uniao": "Termofusão", "item": "Curva 90° raio longo", "metodo": "FIXO", "param": "0.6", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (long radius) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PPR", "uniao": "Termofusão", "item": "Cotovelo 45°", "metodo": "CRANE", "param": "16", "fonte": "Crane TP-410: K = n·fT (fT de aço comercial por DN) (n = 16) - conservador para tubo liso; multiplicador conferido no Crane TP-410M (edição métrica, 2009), p. A-28 a A-30 (PDF 122 a 124); premissa declarada: fT de aço comercial aplicado a tubo liso (lado conservador)" },
+      { "familia": "PPR", "uniao": "Termofusão", "item": "Curva 45° raio longo", "metodo": "T4_25", "param": "cot45", "fonte": "ASHRAE Fund. 2021 cap. 22, Tab. 4 (solda/flange; Hydraulic Institute 1990), p. 22.6 (PDF 642), pelo DN equivalente; abaixo de 25 mm, o valor de 25 mm; premissa declarada: tabela de aço aplicada a outro material" },
       { "familia": "PPR", "uniao": "Termofusão", "item": "Tê — passagem direta", "metodo": "FIXO", "param": "0.5", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (straight-through flow) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PPR", "uniao": "Termofusão", "item": "Tê — derivação", "metodo": "FIXO", "param": "1.8", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (flow through branch) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PPR", "uniao": "Termofusão", "item": "Válvula globo", "metodo": "FIXO", "param": "10", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (globe valve open)" },
@@ -1282,6 +1290,7 @@ window.HVAC.modo = 'agua';
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Cotovelo 90°", "metodo": "FIXO", "param": "0.9", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (short radius) - conexão lisa; K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Curva 90° raio longo", "metodo": "FIXO", "param": "0.6", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (long radius) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Cotovelo 45°", "metodo": "CRANE", "param": "16", "fonte": "Crane TP-410: K = n·fT (fT de aço comercial por DN) (n = 16) - conservador para tubo liso; multiplicador conferido no Crane TP-410M (edição métrica, 2009), p. A-28 a A-30 (PDF 122 a 124); premissa declarada: fT de aço comercial aplicado a tubo liso (lado conservador)" },
+      { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Curva 45° raio longo", "metodo": "T4_25", "param": "cot45", "fonte": "ASHRAE Fund. 2021 cap. 22, Tab. 4 (solda/flange; Hydraulic Institute 1990), p. 22.6 (PDF 642), pelo DN equivalente; abaixo de 25 mm, o valor de 25 mm; premissa declarada: tabela de aço aplicada a outro material" },
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Tê — passagem direta", "metodo": "FIXO", "param": "0.5", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (straight-through flow) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Tê — derivação", "metodo": "FIXO", "param": "1.8", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (flow through branch) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PEAD", "uniao": "Solda de topo / eletrofusão", "item": "Válvula globo", "metodo": "FIXO", "param": "10", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (globe valve open)" },
@@ -1298,6 +1307,7 @@ window.HVAC.modo = 'agua';
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Cotovelo 90°", "metodo": "PVC_COT", "param": "", "fonte": "ASHRAE Fund. 2021 cap. 22, Tab. 8 (PVC Sch 80 injetado, limite superior), p. 22.8" },
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Curva 90° raio longo", "metodo": "FIXO", "param": "0.6", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (long radius) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Cotovelo 45°", "metodo": "CRANE", "param": "16", "fonte": "Crane TP-410: K = n·fT (fT de aço comercial por DN) (n = 16) - conservador para tubo liso; multiplicador conferido no Crane TP-410M (edição métrica, 2009), p. A-28 a A-30 (PDF 122 a 124); premissa declarada: fT de aço comercial aplicado a tubo liso (lado conservador)" },
+      { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Curva 45° raio longo", "metodo": "T4_25", "param": "cot45", "fonte": "ASHRAE Fund. 2021 cap. 22, Tab. 4 (solda/flange; Hydraulic Institute 1990), p. 22.6 (PDF 642), pelo DN equivalente; abaixo de 25 mm, o valor de 25 mm; premissa declarada: tabela de aço aplicada a outro material" },
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Tê — passagem direta", "metodo": "FIXO", "param": "0.5", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (straight-through flow) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Tê — derivação", "metodo": "FIXO", "param": "1.8", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (flow through branch) - K genérico em material não ensaiado é premissa do app; a NBR 16401-1, 12.2.5, remete à literatura e ao fabricante os dados de tubos de outros materiais; o K manual substitui" },
       { "familia": "PVC", "uniao": "Soldável (cola)", "item": "Válvula globo", "metodo": "FIXO", "param": "10", "fonte": "ASHRAE Fund. 2021 cap. 3, Tab. 3 (Fitting Loss Coefficients of Turbulent Flow), p. 3.8 (globe valve open)" },
@@ -1485,6 +1495,455 @@ window.HVAC.modo = 'agua';
       { "tabela": "11", "codigo": "SD5-2", "descricao": "Derivação a 45°, ramal cônico com redução no corpo", "descricao_original": "Wye, 45°, Conical branch tapered into body", "c_principal": "0.15", "c_ramal": "0.45", "qs_qc": "0.8", "as_ac": "0.69", "qb_qc": "0.2", "ab_ac": "0.25", "fonte": "ASHRAE Fundamentals 2021 (SI), cap. 21, Tab. 11 Options for Selecting 45° Takeoff (Wye), p. 21.22, PDF 626 (coeficientes para Qs/Qc = 0,8 e As/Ac = 0,69 na passagem direta e Qb/Qc = 0,2 e Ab/Ac = 0,25 no ramal)" },
       { "tabela": "11", "codigo": "SD5-3", "descricao": "Derivação a 45°, corpo reto com transição de redução", "descricao_original": "Wye, 45°, Straight body branch with reduction transition", "c_principal": "0.15", "c_ramal": "0.50", "qs_qc": "0.8", "as_ac": "0.69", "qb_qc": "0.2", "ab_ac": "0.25", "fonte": "ASHRAE Fundamentals 2021 (SI), cap. 21, Tab. 11 Options for Selecting 45° Takeoff (Wye), p. 21.22, PDF 626 (coeficientes para Qs/Qc = 0,8 e As/Ac = 0,69 na passagem direta e Qb/Qc = 0,2 e Ab/Ac = 0,25 no ramal)" },
       { "tabela": "11", "codigo": "SD5-1", "descricao": "Derivação a 45°", "descricao_original": "Wye, 45°", "c_principal": "0.15", "c_ramal": "0.70", "qs_qc": "0.8", "as_ac": "0.69", "qb_qc": "0.2", "ab_ac": "0.25", "fonte": "ASHRAE Fundamentals 2021 (SI), cap. 21, Tab. 11 Options for Selecting 45° Takeoff (Wye), p. 21.22, PDF 626 (coeficientes para Qs/Qc = 0,8 e As/Ac = 0,69 na passagem direta e Qb/Qc = 0,2 e Ab/Ac = 0,25 no ramal)" }
+    ],
+    arCurvas: [
+      { "peca": "3-1", "grandeza": "Co", "linha": "0.5", "coluna": "", "valor": "0.71", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Co", "linha": "0.75", "coluna": "", "valor": "0.33", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Co", "linha": "1", "coluna": "", "valor": "0.22", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Co", "linha": "1.5", "coluna": "", "valor": "0.15", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Co", "linha": "2", "coluna": "", "valor": "0.13", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Co", "linha": "2.5", "coluna": "", "valor": "0.12", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "0", "coluna": "", "valor": "0", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "20", "coluna": "", "valor": "0.31", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "30", "coluna": "", "valor": "0.45", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "45", "coluna": "", "valor": "0.6", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "60", "coluna": "", "valor": "0.78", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "75", "coluna": "", "valor": "0.9", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "90", "coluna": "", "valor": "1", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "110", "coluna": "", "valor": "1.13", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "130", "coluna": "", "valor": "1.2", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "150", "coluna": "", "valor": "1.28", "pagina": "10", "obs": "" },
+      { "peca": "3-1", "grandeza": "Kt", "linha": "180", "coluna": "", "valor": "1.4", "pagina": "10", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "5", "coluna": "0.75", "valor": "0.46", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "5", "coluna": "1", "valor": "0.33", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "5", "coluna": "1.5", "valor": "0.24", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "5", "coluna": "2", "valor": "0.19", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "4", "coluna": "0.75", "valor": "0.5", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "4", "coluna": "1", "valor": "0.37", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "4", "coluna": "1.5", "valor": "0.27", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "4", "coluna": "2", "valor": "0.24", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "3", "coluna": "0.75", "valor": "0.54", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "3", "coluna": "1", "valor": "0.42", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "3", "coluna": "1.5", "valor": "0.34", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Co", "linha": "3", "coluna": "2", "valor": "0.33", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "0", "coluna": "", "valor": "0", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "20", "coluna": "", "valor": "0.31", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "30", "coluna": "", "valor": "0.45", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "45", "coluna": "", "valor": "0.6", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "60", "coluna": "", "valor": "0.78", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "75", "coluna": "", "valor": "0.9", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "90", "coluna": "", "valor": "1", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "110", "coluna": "", "valor": "1.13", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "130", "coluna": "", "valor": "1.2", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "150", "coluna": "", "valor": "1.28", "pagina": "11", "obs": "" },
+      { "peca": "3-2", "grandeza": "Kt", "linha": "180", "coluna": "", "valor": "1.4", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "20", "coluna": "", "valor": "0.08", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "30", "coluna": "", "valor": "0.16", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "45", "coluna": "", "valor": "0.34", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "60", "coluna": "", "valor": "0.55", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "75", "coluna": "", "valor": "0.81", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "Co", "linha": "90", "coluna": "", "valor": "1.2", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "1", "coluna": "", "valor": "1.4", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "2", "coluna": "", "valor": "1.26", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "3", "coluna": "", "valor": "1.19", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "4", "coluna": "", "valor": "1.14", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "6", "coluna": "", "valor": "1.09", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "8", "coluna": "", "valor": "1.06", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "10", "coluna": "", "valor": "1.04", "pagina": "11", "obs": "" },
+      { "peca": "3-3", "grandeza": "KRe", "linha": "14", "coluna": "", "valor": "1", "pagina": "11", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "0.25", "valor": "1.3", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "0.5", "valor": "1.3", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "0.75", "valor": "1.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "1", "valor": "1.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "1.5", "valor": "1.1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "2", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "3", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "4", "valor": "1.1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "5", "valor": "1.1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "6", "valor": "1.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.5", "coluna": "8", "valor": "1.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "0.25", "valor": "0.57", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "0.5", "valor": "0.52", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "0.75", "valor": "0.48", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "1", "valor": "0.44", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "1.5", "valor": "0.4", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "2", "valor": "0.39", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "3", "valor": "0.39", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "4", "valor": "0.4", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "5", "valor": "0.42", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "6", "valor": "0.43", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "0.75", "coluna": "8", "valor": "0.44", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "0.25", "valor": "0.27", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "0.5", "valor": "0.25", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "0.75", "valor": "0.23", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "1", "valor": "0.21", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "1.5", "valor": "0.19", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "2", "valor": "0.18", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "3", "valor": "0.18", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "4", "valor": "0.19", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "5", "valor": "0.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "6", "valor": "0.21", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1", "coluna": "8", "valor": "0.21", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "0.25", "valor": "0.22", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "0.5", "valor": "0.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "0.75", "valor": "0.19", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "1", "valor": "0.17", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "1.5", "valor": "0.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "2", "valor": "0.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "3", "valor": "0.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "4", "valor": "0.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "5", "valor": "0.16", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "6", "valor": "0.17", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "1.5", "coluna": "8", "valor": "0.17", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "0.25", "valor": "0.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "0.5", "valor": "0.18", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "0.75", "valor": "0.16", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "1", "valor": "0.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "1.5", "valor": "0.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "2", "valor": "0.13", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "3", "valor": "0.13", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "4", "valor": "0.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "5", "valor": "0.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "6", "valor": "0.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Co", "linha": "2", "coluna": "8", "valor": "0.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "0", "coluna": "", "valor": "0", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "20", "coluna": "", "valor": "0.31", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "30", "coluna": "", "valor": "0.45", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "45", "coluna": "", "valor": "0.6", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "60", "coluna": "", "valor": "0.78", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "75", "coluna": "", "valor": "0.9", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "90", "coluna": "", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "110", "coluna": "", "valor": "1.13", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "130", "coluna": "", "valor": "1.2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "150", "coluna": "", "valor": "1.28", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "Kt", "linha": "180", "coluna": "", "valor": "1.4", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "1", "valor": "1.4", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "2", "valor": "1.26", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "3", "valor": "1.19", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "4", "valor": "1.14", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "6", "valor": "1.09", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "8", "valor": "1.06", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "10", "valor": "1.04", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "14", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.5", "coluna": "20", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "1", "valor": "2", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "2", "valor": "1.77", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "3", "valor": "1.64", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "4", "valor": "1.56", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "6", "valor": "1.46", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "8", "valor": "1.38", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "10", "valor": "1.3", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "14", "valor": "1.15", "pagina": "12", "obs": "" },
+      { "peca": "3-5", "grandeza": "KRe", "linha": "0.75", "coluna": "20", "valor": "1", "pagina": "12", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "0.25", "valor": "0.08", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "0.5", "valor": "0.08", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "0.75", "valor": "0.08", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "1", "valor": "0.07", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "1.5", "valor": "0.07", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "2", "valor": "0.07", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "3", "valor": "0.06", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "4", "valor": "0.06", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "5", "valor": "0.05", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "6", "valor": "0.05", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "20", "coluna": "8", "valor": "0.05", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "0.25", "valor": "0.18", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "0.5", "valor": "0.17", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "0.75", "valor": "0.17", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "1", "valor": "0.16", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "1.5", "valor": "0.15", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "2", "valor": "0.15", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "3", "valor": "0.13", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "4", "valor": "0.13", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "5", "valor": "0.12", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "6", "valor": "0.12", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "30", "coluna": "8", "valor": "0.11", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "0.25", "valor": "0.38", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "0.5", "valor": "0.37", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "0.75", "valor": "0.36", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "1", "valor": "0.34", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "1.5", "valor": "0.33", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "2", "valor": "0.31", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "3", "valor": "0.28", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "4", "valor": "0.27", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "5", "valor": "0.26", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "6", "valor": "0.25", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "45", "coluna": "8", "valor": "0.24", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "0.25", "valor": "0.6", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "0.5", "valor": "0.59", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "0.75", "valor": "0.57", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "1", "valor": "0.55", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "1.5", "valor": "0.52", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "2", "valor": "0.49", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "3", "valor": "0.46", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "4", "valor": "0.43", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "5", "valor": "0.41", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "6", "valor": "0.39", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "60", "coluna": "8", "valor": "0.38", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "0.25", "valor": "0.89", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "0.5", "valor": "0.87", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "0.75", "valor": "0.84", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "1", "valor": "0.81", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "1.5", "valor": "0.77", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "2", "valor": "0.73", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "3", "valor": "0.67", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "4", "valor": "0.63", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "5", "valor": "0.61", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "6", "valor": "0.58", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "75", "coluna": "8", "valor": "0.57", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "0.25", "valor": "1.3", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "0.5", "valor": "1.3", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "0.75", "valor": "1.2", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "1", "valor": "1.2", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "1.5", "valor": "1.1", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "2", "valor": "1.1", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "3", "valor": "0.98", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "4", "valor": "0.92", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "5", "valor": "0.89", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "6", "valor": "0.85", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "Co", "linha": "90", "coluna": "8", "valor": "0.83", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "1", "coluna": "", "valor": "1.4", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "2", "coluna": "", "valor": "1.26", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "3", "coluna": "", "valor": "1.19", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "4", "coluna": "", "valor": "1.14", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "6", "coluna": "", "valor": "1.09", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "8", "coluna": "", "valor": "1.06", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "10", "coluna": "", "valor": "1.04", "pagina": "13", "obs": "" },
+      { "peca": "3-6", "grandeza": "KRe", "linha": "14", "coluna": "", "valor": "1", "pagina": "13", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.55", "coluna": "", "valor": "0.218", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "0.25", "valor": "0.52", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "0.5", "valor": "0.4", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "1", "valor": "0.43", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "1.5", "valor": "0.49", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "2", "valor": "0.55", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "3", "valor": "0.66", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "4", "valor": "0.75", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "5", "valor": "0.84", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "6", "valor": "0.93", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "7", "valor": "1", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.55", "coluna": "8", "valor": "1.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.6", "coluna": "", "valor": "0.302", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "0.25", "valor": "0.36", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "0.5", "valor": "0.27", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "1", "valor": "0.25", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "1.5", "valor": "0.24", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "2", "valor": "0.3", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "3", "valor": "0.35", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "4", "valor": "0.39", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "5", "valor": "0.42", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "6", "valor": "0.46", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "7", "valor": "0.49", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.6", "coluna": "8", "valor": "0.52", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.65", "coluna": "", "valor": "0.361", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "0.25", "valor": "0.28", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "0.5", "valor": "0.21", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "1", "valor": "0.18", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "1.5", "valor": "0.19", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "2", "valor": "0.2", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "3", "valor": "0.22", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "4", "valor": "0.25", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "5", "valor": "0.26", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "6", "valor": "0.28", "pagina": "14", "obs": "impresso 028 sem o ponto, lido 0.28 (CV8)" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "7", "valor": "0.3", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.65", "coluna": "8", "valor": "0.32", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.7", "coluna": "", "valor": "0.408", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "0.25", "valor": "0.22", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "0.5", "valor": "0.16", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "1", "valor": "0.14", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "1.5", "valor": "0.14", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "2", "valor": "0.15", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "3", "valor": "0.16", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "4", "valor": "0.17", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "5", "valor": "0.18", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "6", "valor": "0.19", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "7", "valor": "0.2", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.7", "coluna": "8", "valor": "0.21", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.75", "coluna": "", "valor": "0.447", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "0.25", "valor": "0.18", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "0.5", "valor": "0.13", "pagina": "14", "obs": "impresso 013 sem o ponto, lido 0.13 (CV8)" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "1", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "1.5", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "2", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "3", "valor": "0.12", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "4", "valor": "0.13", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "5", "valor": "0.14", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "6", "valor": "0.14", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "7", "valor": "0.15", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.75", "coluna": "8", "valor": "0.15", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.8", "coluna": "", "valor": "0.48", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "0.25", "valor": "0.15", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "0.5", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "1", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "1.5", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "2", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "3", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "4", "valor": "0.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "5", "valor": "0.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "6", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "7", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.8", "coluna": "8", "valor": "0.12", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.85", "coluna": "", "valor": "0.509", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "0.25", "valor": "0.13", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "0.5", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "1", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "1.5", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "2", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "3", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "4", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "5", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "6", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "7", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.85", "coluna": "8", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.9", "coluna": "", "valor": "0.535", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "0.25", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "0.5", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "1", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "1.5", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "2", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "3", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "4", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "5", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "6", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "7", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.9", "coluna": "8", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "0.95", "coluna": "", "valor": "0.557", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "0.25", "valor": "0.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "0.5", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "1", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "1.5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "2", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "3", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "4", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "6", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "7", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "0.95", "coluna": "8", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "CR", "linha": "1", "coluna": "", "valor": "0.577", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "0.25", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "0.5", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "1", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "1.5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "2", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "3", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "4", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "6", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "7", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7a", "grandeza": "Co", "linha": "1", "coluna": "8", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.55", "coluna": "", "valor": "0.362", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "0.25", "valor": "0.26", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "0.5", "valor": "0.2", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "1", "valor": "0.22", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "1.5", "valor": "0.25", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "2", "valor": "0.28", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "3", "valor": "0.33", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "4", "valor": "0.37", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "5", "valor": "0.41", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "6", "valor": "0.45", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "7", "valor": "0.48", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.55", "coluna": "8", "valor": "0.51", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.6", "coluna": "", "valor": "0.45", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "0.25", "valor": "0.17", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "0.5", "valor": "0.13", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "1", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "1.5", "valor": "0.12", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "2", "valor": "0.13", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "3", "valor": "0.15", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "4", "valor": "0.16", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "5", "valor": "0.17", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "6", "valor": "0.19", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "7", "valor": "0.2", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.6", "coluna": "8", "valor": "0.21", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.65", "coluna": "", "valor": "0.507", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "0.25", "valor": "0.12", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "0.5", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "1", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "1.5", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "2", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "3", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "4", "valor": "0.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "5", "valor": "0.1", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "6", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "7", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.65", "coluna": "8", "valor": "0.11", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.7", "coluna": "", "valor": "0.55", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "0.25", "valor": "0.09", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "0.5", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "1", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "1.5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "2", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "3", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "4", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "5", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "6", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "7", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.7", "coluna": "8", "valor": "0.07", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.75", "coluna": "", "valor": "0.585", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "0.25", "valor": "0.08", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "0.5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "1", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "1.5", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "2", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "3", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "4", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "5", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "6", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "7", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.75", "coluna": "8", "valor": "0.05", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "CR", "linha": "0.8", "coluna": "", "valor": "0.613", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "0.25", "valor": "0.06", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "0.5", "valor": "0.04", "pagina": "14", "obs": "impresso 004 sem o ponto, lido 0.04 (CV8)" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "1", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "1.5", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "2", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "3", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "4", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "5", "valor": "0.03", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "6", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "7", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7b", "grandeza": "Co", "linha": "0.8", "coluna": "8", "valor": "0.04", "pagina": "14", "obs": "" },
+      { "peca": "3-7c", "grandeza": "CR", "linha": "0.55", "coluna": "", "valor": "0.467", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "0.25", "valor": "0.11", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "0.5", "valor": "0.1", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "1", "valor": "0.12", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "1.5", "valor": "0.13", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "2", "valor": "0.14", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "3", "valor": "0.16", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "4", "valor": "0.18", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "5", "valor": "0.19", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "6", "valor": "0.21", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "7", "valor": "0.22", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.55", "coluna": "8", "valor": "0.23", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "CR", "linha": "0.6", "coluna": "", "valor": "0.549", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "0.25", "valor": "0.07", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "0.5", "valor": "0.05", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "1", "valor": "0.06", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "1.5", "valor": "0.06", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "2", "valor": "0.06", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "3", "valor": "0.07", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "4", "valor": "0.07", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "5", "valor": "0.08", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "6", "valor": "0.08", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "7", "valor": "0.08", "pagina": "15", "obs": "" },
+      { "peca": "3-7c", "grandeza": "Co", "linha": "0.6", "coluna": "8", "valor": "0.09", "pagina": "15", "obs": "" },
+      { "peca": "3-8", "grandeza": "Co", "linha": "1", "coluna": "", "valor": "0.12", "pagina": "15", "obs": "" },
+      { "peca": "3-8", "grandeza": "Co", "linha": "2", "coluna": "", "valor": "0.15", "pagina": "15", "obs": "" },
+      { "peca": "3-8", "grandeza": "Co", "linha": "3", "coluna": "", "valor": "0.18", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "1", "coluna": "1000", "valor": "0.27", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "1", "coluna": "2000", "valor": "0.22", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "1", "coluna": "3000", "valor": "0.19", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "1", "coluna": "4000", "valor": "0.17", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "2", "coluna": "1000", "valor": "0.33", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "2", "coluna": "2000", "valor": "0.29", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "2", "coluna": "3000", "valor": "0.26", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "2", "coluna": "4000", "valor": "0.23", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "3", "coluna": "1000", "valor": "0.38", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "3", "coluna": "2000", "valor": "0.31", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "3", "coluna": "3000", "valor": "0.27", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "3", "coluna": "4000", "valor": "0.24", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "4", "coluna": "1000", "valor": "0.26", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "4", "coluna": "2000", "valor": "0.21", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "4", "coluna": "3000", "valor": "0.18", "pagina": "15", "obs": "" },
+      { "peca": "3-9", "grandeza": "Co", "linha": "4", "coluna": "4000", "valor": "0.16", "pagina": "15", "obs": "" }
     ],
     arVelocidades: [
       { "chave": "shaft", "posicao": "Em shaft ou acima de forro de gesso fechado", "posicao_original": "In shaft or above solid drywall ceiling", "nc": "45", "nc_obs": "", "v_retangular_m_s": "17.8", "v_circular_m_s": "25.4", "fonte": "ASHRAE Fundamentals 2021 (SI), cap. 21, Tab. 12 Recommended Maximum Airflow Velocities to Achieve Specified Acoustic Design Criteria, p. 21.23, PDF 627" },
@@ -1680,7 +2139,16 @@ window.HVAC.modo = 'agua';
     ruido.push(r); ruidoChave[chave(r.chave, String(r.nc))] = r;
   });
 
+  // --- curvas (ASHRAE, Fitting Loss Coefficients, seção 3, p. 10 a 15; v0.9.0): curvas[peca][grandeza] = linhas ---
+  // grandeza: Co (C'o de 90°), Kt (Kθ), KRe, CR; linha e coluna no sistema impresso (r/D, r/W, H/W, θ, Re×10^-4, modelo, fpm)
+  var curvas = mapa();
+  (B.arCurvas || []).forEach(function (l) {
+    var p = curvas[l.peca] = curvas[l.peca] || mapa(), g = p[l.grandeza] = p[l.grandeza] || [];
+    g.push({ linha: num(l.linha), coluna: num(l.coluna), valor: num(l.valor), pagina: num(l.pagina), obs: l.obs || '' });
+  });
+
   TAB.ar = {
+    curvas: curvas,
     materiais: materiais,
     material: function (ch) { return matChave[chave(ch === null || ch === undefined ? '' : ch)] || null; },
     materialPadrao: matPadrao,
@@ -1693,6 +2161,246 @@ window.HVAC.modo = 'agua';
     derivacao: function (codigo) { return derivChave[chave(codigo === null || codigo === undefined ? '' : codigo)] || null; },
     ruido: ruido,
     limiteRuido: function (posicao, nc) { return ruidoChave[chave(posicao || '', String(nc))] || null; }
+  };
+})(window.HVAC);
+
+</script>
+<script>
+/* ==== js/motor/curvas.js ==== */
+/* Redes HVAC. Motor, peça Curvas (v0.9.0, CV1 a CV9): coeficiente C das curvas de duto pelo ASHRAE, Fitting Loss
+   Coefficients (material online do Principles of HVAC, 9ª ed., © 2021), seção 3, p. 10 a 15 (dados em
+   codigo\dados\ar_curvas.csv). C = C'o(90°) × Kθ × KRe, conforme a fórmula impressa de cada peça (a 3-2 não
+   imprime fórmula: Kθ·C'o, como a 3-1). H/W, Re e a
+   velocidade (3-9) interpolados linearmente, com o valor da borda fora da tabela; raio e ângulo só nos valores
+   tabelados. W = lado no plano da curva. Oval pelas peças retangulares e flexível pela 3-1: premissas, CONFERIR.
+   Sem DOM. */
+(function (H) {
+  'use strict';
+  var M = H.motor = H.motor || {};
+  function numero(v) { return typeof v === 'number' && isFinite(v); }
+  function br(n, casas) { return n.toFixed(casas).replace('.', ','); }
+  function igual(a, b) { return numero(a) && numero(b) && Math.abs(a - b) < 1e-9; }
+
+  var FONTE = 'ASHRAE, Fitting Loss Coefficients (Principles of HVAC, 9ª ed., © 2021)';
+  var FPM = 0.00508;   // 1 fpm = 0,00508 m/s
+  var RET = ['retangular', 'oval'], CIRC = ['circular', 'flexivel'];
+
+  // catálogo: código gravado no .json (campo peca) → peça da fonte
+  function pc(codigo, nome, tabela, formas, raio, tipo, pagina, figura, extra) {
+    var p = { codigo: codigo, nome: nome, tabela: tabela, formas: formas, raio: raio, tipo: tipo, pagina: pagina, figura: figura,
+      gomos: null, modelo: null, raioPadrao: 1, so90: false }, k;
+    for (k in (extra || {})) { p[k] = extra[k]; }
+    return p;
+  }
+  var PECAS = [
+    pc('3-1', 'Curva lisa estampada', '3-1', CIRC, 'r/D', 'KtCo', '10', '3-1'),
+    pc('3-2-5', 'Curva de 5 gomos', '3-2', ['circular'], 'r/D', 'KtCo', '11', '3-2', { gomos: 5 }),
+    pc('3-2-4', 'Curva de 4 gomos', '3-2', ['circular'], 'r/D', 'KtCo', '11', '3-2', { gomos: 4 }),
+    pc('3-2-3', 'Curva de 3 gomos', '3-2', ['circular'], 'r/D', 'KtCo', '11', '3-2', { gomos: 3 }),
+    pc('3-3', 'Curva de canto vivo', '3-3', ['circular'], '', 'KReCoT', '11', '3-3'),
+    pc('3-5', 'Curva lisa sem veias', '3-5', RET, 'r/W', 'KtKReCo', '12', '3-5'),
+    pc('3-6', 'Curva de canto vivo', '3-6', RET, '', 'KReCoT', '13', '3-6'),
+    pc('3-7a', 'Curva lisa com 1 veia', '3-7a', RET, 'r/W', 'KtCo', '13 e 14', '3-7a'),
+    pc('3-7b', 'Curva lisa com 2 veias', '3-7b', RET, 'r/W', 'KtCo', '14', '3-7b', { raioPadrao: 0.8 }),
+    pc('3-7c', 'Curva lisa com 3 veias', '3-7c', RET, 'r/W', 'KtCo', '15', '3-7c', { raioPadrao: 0.6 }),
+    pc('3-8-1', 'Canto vivo com veias simples, modelo 1', '3-8', RET, '', 'Co', '15', '3-8', { modelo: 1, so90: true }),
+    pc('3-8-2', 'Canto vivo com veias simples, modelo 2', '3-8', RET, '', 'Co', '15', '3-8', { modelo: 2, so90: true }),
+    pc('3-8-3', 'Canto vivo com veias simples, modelo 3', '3-8', RET, '', 'Co', '15', '3-8', { modelo: 3, so90: true }),
+    pc('3-9-1', 'Canto vivo com veias duplas, modelo 1', '3-9', RET, '', 'CoV', '15', '3-9', { modelo: 1, so90: true }),
+    pc('3-9-2', 'Canto vivo com veias duplas, modelo 2', '3-9', RET, '', 'CoV', '15', '3-9', { modelo: 2, so90: true }),
+    pc('3-9-3', 'Canto vivo com veias duplas, modelo 3', '3-9', RET, '', 'CoV', '15', '3-9', { modelo: 3, so90: true }),
+    pc('3-9-4', 'Canto vivo com veias duplas, modelo 4', '3-9', RET, '', 'CoV', '15', '3-9', { modelo: 4, so90: true })
+  ];
+  var porCodigo = Object.create(null);
+  PECAS.forEach(function (p) { porCodigo[p.codigo] = p; });
+
+  function tabela(tabAr, p, g) { var t = tabAr && tabAr.curvas && tabAr.curvas[p]; return (t && t[g]) || []; }
+
+  // interpolação linear numa lista de pontos { x, y, obs }; fora: -1 abaixo, +1 acima, 0 dentro
+  function interp(pts, x) {
+    var a, b, f, i;
+    pts = pts.slice().sort(function (u, v) { return u.x - v.x; });
+    if (!pts.length || !numero(x)) { return null; }
+    if (x <= pts[0].x) { return { y: pts[0].y, fora: x < pts[0].x - 1e-9 ? -1 : 0, obs: pts[0].obs ? [pts[0].obs] : [] }; }
+    b = pts[pts.length - 1];
+    if (x >= b.x) { return { y: b.y, fora: x > b.x + 1e-9 ? 1 : 0, obs: b.obs ? [b.obs] : [] }; }
+    for (i = 0; i < pts.length - 1; i++) {
+      a = pts[i]; b = pts[i + 1];
+      if (x >= a.x && x <= b.x) {
+        f = (x - a.x) / (b.x - a.x);
+        return { y: a.y + f * (b.y - a.y), fora: 0, obs: [].concat(f < 1 && a.obs ? [a.obs] : [], f > 0 && b.obs ? [b.obs] : []) };
+      }
+    }
+    return null;
+  }
+  // pontos de uma linha da tabela (linha fixa, x = coluna), ou da tabela 1-D (x = linha)
+  function linhaDe(rows, linha) {
+    return rows.filter(function (r) { return igual(r.linha, linha); }).map(function (r) { return { x: r.coluna, y: r.valor, obs: r.obs }; });
+  }
+  function unica(rows) { return rows.map(function (r) { return { x: r.linha, y: r.valor, obs: r.obs }; }); }
+
+  function fmtRaio(r) { return Math.abs(r * 10 - Math.round(r * 10)) < 1e-9 ? br(r, 1) : br(r, 2); }
+  function fmtRe(re) {
+    var e = Math.floor(Math.log(re) / Math.LN10), m = re / Math.pow(10, e), sup = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+    if (m >= 9.995) { m = m / 10; e++; }
+    return br(m, 2) + '×10' + String(e).split('').map(function (c) { return sup[+c]; }).join('');
+  }
+
+  M.curvas = {
+    FONTE: FONTE,
+    PECAS: PECAS,
+    peca: function (codigo) { return (codigo !== null && codigo !== undefined && porCodigo[String(codigo)]) || null; },
+    rotulo: function (p) { return p ? p.nome + ' (' + p.codigo.replace(/^(3-[2389])-\d$/, '$1') + ')' : ''; },
+    serve: function (p, forma) { return !!p && p.formas.indexOf(forma) >= 0; },
+
+    // raios tabelados da peça (r/D ou r/W), em ordem
+    raios: function (tabAr, p) {
+      var rows = tabela(tabAr, p.tabela, 'Co'), v = [];
+      if (!p.raio) { return []; }
+      rows.forEach(function (r) {
+        var x = p.tabela === '3-2' ? (igual(r.linha, p.gomos) ? r.coluna : null) : r.linha;
+        if (numero(x) && !v.some(function (y) { return igual(x, y); })) { v.push(x); }
+      });
+      return v.sort(function (a, b) { return a - b; });
+    },
+    rotuloRaio: function (tabAr, p, r) {
+      var lista = this.raios(tabAr, p), dois = lista.some(function (x) { return igual(x, 1); }) && lista.some(function (x) { return igual(x, 1.5); });
+      var s = p.raio + ' ' + fmtRaio(r);
+      if (dois && igual(r, 1)) { s += ' (raio curto)'; }
+      if (dois && igual(r, 1.5)) { s += ' (raio longo)'; }
+      if (p.codigo === '3-5' && igual(r, 0.5)) { s += ' (canto interno vivo, só 90°)'; }
+      return s;
+    },
+    angulos: function (p, raio) { return (p.so90 || (p.codigo === '3-5' && igual(raio, 0.5))) ? [90] : [90, 45]; },
+    // figura da peça (chave em H.dados.figurasCurvas) e legenda
+    figura: function (p, raio) { return p.codigo === '3-5' && igual(raio, 0.5) ? '3-5-vivo' : p.figura; },
+    legenda: function (p, pagina) { return 'Figura: ' + FONTE + ', peça ' + p.tabela + ', p. ' + (pagina || p.pagina) + '.'; },
+
+    /* C de uma curva. d: { angulo, raio, lado ('largura'|'altura'), forma, a, b, v (m/s), dh (mm), rho, mu, nome }.
+       Devolve { ok, c, motivo, formula, detalhe, fonte, raio, angulo, hw, re, avisos: [{ tipo, texto }] }. */
+    calcular: function (tabAr, codigo, d) {
+      var p = this.peca(codigo), av = [], obs = [];
+      var r = { ok: false, c: null, motivo: '', formula: '', detalhe: '', fonte: '', raio: null, angulo: null, hw: null, re: null, avisos: av };
+      function falha(m) { r.motivo = m; r.fonte = FONTE + ', peça ' + (p ? p.tabela : codigo) + ': ' + m; return r; }
+      if (!p) { return falha('peça não encontrada'); }
+      var nome = d.nome ? 'Conexão "' + d.nome + '"' : 'Conexão ' + this.rotulo(p);
+      if (!this.serve(p, d.forma)) {
+        return falha('peça ' + this.rotulo(p) + ' não serve para duto ' + (d.forma || 'sem forma')
+          + ' (' + (p.formas[0] === 'circular' ? 'só circular' + (p.formas.length > 1 ? ' e flexível' : '') : 'só retangular e oval') + ')');
+      }
+      var raio = p.raio ? (numero(d.raio) ? d.raio : p.raioPadrao) : null;
+      if (p.raio && !this.raios(tabAr, p).some(function (x) { return igual(x, raio); })) {
+        return falha(p.raio + ' ' + fmtRaio(raio) + ' fora da lista da peça ' + p.tabela);
+      }
+      var ang = numero(d.angulo) ? d.angulo : 90;
+      if (this.angulos(p, raio).indexOf(ang) < 0) { return falha('ângulo de ' + br(ang, 0) + '° não tabelado para a peça ' + p.tabela + ' (só 90°)'); }
+      r.raio = raio; r.angulo = ang;
+      var ret = RET.indexOf(d.forma) >= 0, hw = null, W, Hh, re = null, kt = null, kre = null, co = null, x, txt = [];
+      if (ret) {
+        W = d.lado === 'altura' ? d.b : d.a; Hh = d.lado === 'altura' ? d.a : d.b;
+        if (!(numero(W) && numero(Hh) && W > 0 && Hh > 0)) { return falha('seção sem dimensão'); }
+        hw = Hh / W; r.hw = hw;
+      }
+      var precisaRe = p.tipo === 'KtKReCo' || p.tipo === 'KReCoT';
+      if (precisaRe || p.tipo === 'CoV') {
+        if (!(numero(d.v) && d.v > 0)) { return falha('sem velocidade no trecho'); }
+      }
+      if (precisaRe) {
+        if (!(numero(d.dh) && numero(d.rho) && numero(d.mu) && d.mu > 0)) { return falha('sem diâmetro hidráulico ou propriedades do ar'); }
+        re = d.rho * d.v * (d.dh / 1000) / d.mu; r.re = re;
+      }
+      function usaHW(pts) {
+        var z = interp(pts, hw);
+        if (!z) { return null; }
+        if (z.fora) {
+          av.push({ tipo: 'curvaHW', texto: nome + ': H/W de ' + br(hw, 2) + ' fora da tabela da peça ' + p.tabela + ' (0,25 a 8,0): usado o valor da borda (' + FONTE + ', p. ' + p.pagina + ').' });
+        }
+        obs = obs.concat(z.obs); return z.y;
+      }
+      function usaKRe(pts, borda) {
+        var z = interp(pts, re / 1e4);
+        if (!z) { return null; }
+        if (z.fora < 0) {
+          av.push({ tipo: 'curvaRe', texto: nome + ': Reynolds de ' + fmtRe(re) + ', abaixo de 1,00×10⁴, o menor da tabela da peça ' + p.tabela + ': usado o KRe da borda (' + borda + ').' });
+        }
+        return z.y;
+      }
+      function kTheta() {
+        var t = tabela(tabAr, p.tabela, 'Kt');
+        if (!t.length) { t = tabela(tabAr, '3-1', 'Kt'); }
+        var z = interp(unica(t), ang); return z ? z.y : null;
+      }
+      switch (p.tipo) {
+        case 'KtCo':
+          kt = kTheta();
+          if (p.tabela === '3-1') { x = interp(unica(tabela(tabAr, '3-1', 'Co')), raio); co = x ? x.y : null; }
+          else if (p.tabela === '3-2') { x = interp(linhaDe(tabela(tabAr, '3-2', 'Co'), p.gomos), raio); co = x ? x.y : null; }
+          else { co = usaHW(linhaDe(tabela(tabAr, p.tabela, 'Co'), raio)); }
+          r.formula = 'Kθ·C\'o'; r.c = (kt === null || co === null) ? null : kt * co;
+          txt.push(br(kt, 2) + ' × ' + br(co, 3));
+          break;
+        case 'KtKReCo':
+          co = usaHW(linhaDe(tabela(tabAr, '3-5', 'Co'), raio));
+          kre = usaKRe(linhaDe(tabela(tabAr, '3-5', 'KRe'), igual(raio, 0.5) ? 0.5 : 0.75), igual(raio, 0.5) ? '1,40' : '2,0');
+          if (igual(raio, 0.5)) {
+            r.formula = 'KRe·C\'o'; r.c = (kre === null || co === null) ? null : kre * co;
+            txt.push(br(kre, 3) + ' × ' + br(co, 3));
+          } else {
+            kt = kTheta();
+            r.formula = 'Kθ·KRe·C\'o'; r.c = (kt === null || kre === null || co === null) ? null : kt * kre * co;
+            txt.push(br(kt, 2) + ' × ' + br(kre, 3) + ' × ' + br(co, 3));
+          }
+          break;
+        case 'KReCoT':
+          if (p.tabela === '3-3') { x = interp(unica(tabela(tabAr, '3-3', 'Co')), ang); co = x ? x.y : null; }
+          else { co = usaHW(linhaDe(tabela(tabAr, '3-6', 'Co'), ang)); }
+          kre = usaKRe(unica(tabela(tabAr, p.tabela, 'KRe')), '1,40');
+          r.formula = 'KRe·C\'o'; r.c = (kre === null || co === null) ? null : kre * co;
+          txt.push(br(kre, 3) + ' × ' + br(co, 3));
+          break;
+        case 'Co':
+          x = tabela(tabAr, '3-8', 'Co').filter(function (z) { return igual(z.linha, p.modelo); })[0];
+          co = x ? x.valor : null; r.formula = 'C\'o'; r.c = co; txt.push(co === null ? '' : br(co, 2));
+          break;
+        case 'CoV':
+          var fpm = d.v / FPM;
+          x = interp(linhaDe(tabela(tabAr, '3-9', 'Co'), p.modelo), fpm);
+          co = x ? x.y : null;
+          if (x && x.fora) {
+            av.push({ tipo: 'curvaV', texto: nome + ': velocidade de ' + br(d.v, 2) + ' m/s ' + (x.fora < 0 ? 'abaixo de 5,08 m/s (1.000 fpm), a menor' : 'acima de 20,32 m/s (4.000 fpm), a maior')
+              + ' da tabela da peça 3-9: usado o C\'o de ' + (x.fora < 0 ? '5,08' : '20,32') + ' m/s.' });
+          }
+          r.formula = 'C\'o(V)'; r.c = co; txt.push(co === null ? '' : br(co, 3) + ' a ' + br(d.v, 2) + ' m/s');
+          break;
+      }
+      if (r.c === null) { return falha('valor não encontrado na tabela'); }
+      r.ok = true;
+      var partes = [];
+      if (p.raio) { partes.push(p.raio + ' ' + fmtRaio(raio)); }
+      if (p.gomos) { partes.push(p.gomos + ' gomos'); }
+      partes.push(br(ang, 0) + '°');
+      if (hw !== null && p.tipo !== 'Co' && p.tipo !== 'CoV') { partes.push('H/W ' + br(hw, 2)); }
+      if (re !== null) { partes.push('Re ' + fmtRe(re)); }
+      r.detalhe = 'C = ' + r.formula + ' = ' + txt.join('') + ' = ' + br(r.c, 3) + '; ' + partes.join('; ');
+      var notas = [];
+      obs.filter(function (o, k) { return o && obs.indexOf(o) === k; }).forEach(function (o) {
+        var m = /impresso (\d+) sem o ponto, lido ([\d.]+)/.exec(o);
+        if (m) { notas.push('C\'o impresso "' + m[1] + '" sem o ponto, lido ' + m[2].replace('.', ',') + ' (premissa de leitura)'); }
+      });
+      // revisão 16/11: a 3-7b e a 3-7c mandam ver uma "Note 3" que não está no documento; o Re não é definido na seção 3
+      if (p.tabela === '3-7b' || p.tabela === '3-7c') { notas.push('Kθ da peça 3-1 (p. 10), por analogia com a 3-7a: a nota 3 citada na peça não está no documento'); }
+      if (re !== null) { notas.push('Re = ρ·V·Dh/μ, Dh = 4·A/P (ASHRAE Fundamentals 2021, cap. 21, p. 21.6)'); }
+      if (d.forma === 'oval') {
+        notas.push('oval pela peça retangular, com os eixos como W e H - CONFERIR');
+        av.push({ tipo: 'curvaOval', texto: nome + ': duto oval calculado pela peça retangular ' + p.tabela + ', com os eixos como W e H (premissa do app; a fonte não traz curva de duto oval) - CONFERIR.' });
+      }
+      if (d.forma === 'flexivel') {
+        notas.push('flexível pela curva estampada 3-1 - CONFERIR');
+        av.push({ tipo: 'curvaFlexivel', texto: nome + ': duto flexível calculado pela curva estampada 3-1 (premissa do app: a ASHRAE remete às peças CD3-22 e CD3-23 da Duct Fitting Database, e a NBR 16401-1:2024, 10.2.2.3, pede o dado do fabricante); o flexível tende a perder mais - CONFERIR.' });
+      }
+      r.fonte = FONTE + ', peça ' + p.tabela + ', p. ' + p.pagina + ': ' + r.detalhe + (notas.length ? '; ' + notas.join('; ') : '') + '.';
+      return r;
+    }
   };
 })(window.HVAC);
 
@@ -3103,7 +3811,11 @@ window.HVAC = window.HVAC || {};
     if (NCS.indexOf(r.nc) < 0) { NCS.push(r.nc); }
   });
   NCS.sort(function (a, b) { return a - b; });
-  var OPS_PECA = [{ v: '', t: '(coeficiente digitado)' }].concat(TA.derivacoes.map(function (d) { return { v: d.codigo, t: d.codigo + ' · ' + d.descricao }; }));
+  // v0.9.0 (TC2): peças em dois grupos; as curvas levam as formas de duto a que servem (a tela filtra pela forma do trecho)
+  var MC = H.motor.curvas, G_CURVAS = 'Curvas (ASHRAE, Fitting Loss Coefficients)', G_DERIV = 'Derivações (Fundamentals 2021, Tab. 10 e 11)';
+  var OPS_PECA = [{ v: '', t: '(coeficiente digitado)' }]
+    .concat(MC.PECAS.map(function (p) { return { v: p.codigo, t: MC.rotulo(p), g: G_CURVAS, formas: p.formas }; }))
+    .concat(TA.derivacoes.map(function (d) { return { v: d.codigo, t: d.codigo + ' · ' + d.descricao, g: G_DERIV }; }));
   var DIM = { t: 'num', p: null, nulo: true, min: 50, max: 5000, un: 'mm', casas: 0 };
   function dim(rotulo) { var o = {}, k; for (k in DIM) { o[k] = DIM[k]; } o.rotulo = rotulo; return o; }
 
@@ -3142,7 +3854,9 @@ window.HVAC = window.HVAC || {};
       paMin: { t: 'num', p: 100, min: 0, max: 5000, rotulo: 'Limite inferior da faixa usual de perda', un: 'Pa/m', casas: 0,
                fonte: 'ASHRAE Fundamentals 2021 (SI), cap. 22, Exemplo 5, p. 22.28 (PDF 664)' },
       envelhecimento: { t: 'num', p: 0.15, min: 0, max: 2, pct: true, rotulo: 'Acréscimo por envelhecimento', un: '%', casas: 1,
-                        fonte: 'HDR Design Guide (1981), citado em ASHRAE Fundamentals 2021 (SI), cap. 22, p. 22.23 (PDF 659): acréscimo de 15 % a 20 % na perda por atrito em circuito fechado (o app adota 15 %) e de 75 % a 90 % em circuito aberto' },
+                        fonte: 'HDR Design Guide (1981), citado em ASHRAE Fundamentals 2021 (SI), cap. 22, p. 22.23 (PDF 659): acréscimo de 15 % a 20 % na perda por atrito em circuito fechado (o app adota 15 %) e de 75 % a 90 % em circuito aberto. ' +
+                          'Silva Telles, Tubulações Industriais: Cálculo, 9ª ed., item 2.8, p. 11 (PDF 26), não fixa valor de projeto: a rugosidade chega com frequência a 10 vezes a do tubo novo, ' +
+                          'e em tubo de ferro ou aço com água a capacidade de transporte pode cair à metade em tempo bem menor que a vida útil. Vale o valor da ASHRAE; o acréscimo fica editável' },
       vMin: { t: 'num', p: 0.6, min: 0, max: 10, rotulo: 'Velocidade mínima até 50 mm (arraste de ar)', un: 'm/s', casas: 2,
               fonte: F_2228 + ': mínimo de 0,6 m/s em tubo de até 50 mm; ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.22 (PDF 280): acima de 0,6 m/s, sem limite de diâmetro' },
       paMinArraste: { t: 'num', p: 75, min: 0, max: 5000, rotulo: 'Perda mínima acima de 50 mm (arraste de ar)', un: 'Pa/m', casas: 0,
@@ -3152,7 +3866,9 @@ window.HVAC = window.HVAC || {};
     },
     bomba: {
       margem: { t: 'num', p: 0, min: 0, max: 1, pct: true, rotulo: 'Margem sobre o ΔP do circuito crítico', un: '%', casas: 1,
-                fonte: 'Padrão 0 %: premissa do app. ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.7 (PDF 265), adverte contra fatores de segurança arbitrários no cálculo da perda de carga e não fixa valor de margem' },
+                fonte: 'Padrão 0 %: premissa do app. ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.7 (PDF 265), adverte contra fatores de segurança arbitrários no cálculo da perda de carga e não fixa valor de margem. ' +
+                  'Silva Telles, Tubulações Industriais: Cálculo, 9ª ed., item 2.7, p. 10 (PDF 25), recomenda adotar sempre uma margem de segurança, sem fixar valor, ' +
+                  'porque o erro do cálculo empírico das perdas pode ser para mais ou para menos. Prevalece a ASHRAE; o projetista pode digitar a margem que adotar' },
       rendBomba: { t: 'num', p: 0.70, pos: true, max: 1, rotulo: 'Rendimento da bomba', un: '', casas: 3, fonte: 'Valor inicial, a CONFERIR no catálogo da bomba selecionada' },
       rendMotor: { t: 'num', p: 0.92, pos: true, max: 1, rotulo: 'Rendimento do motor', un: '', casas: 3, fonte: 'Valor inicial, a CONFERIR no catálogo do motor selecionado' },
       // bomba existente (sessão AG1, AG9 a AG12): dados de catálogo da bomba que fica; vazios, nada é comparado
@@ -3302,8 +4018,16 @@ window.HVAC = window.HVAC || {};
     arSingularidade: {
       trecho: { t: 'txt', p: '', apara: true, rotulo: 'Trecho' },
       descricao: { t: 'txt', p: '', rotulo: 'Descrição' },
-      peca: { t: 'op', p: '', rotulo: 'Peça das Tabelas 10 e 11', ops: OPS_PECA, fonte: F21 + ', Tabelas 10 e 11 (p. 21.22, PDF 626)' },
+      peca: { t: 'op', p: '', rotulo: 'Peça', ops: OPS_PECA,
+              fonte: 'Curvas: ' + MC.FONTE + ', seção 3 (p. 10 a 15). Derivações: ' + F21 + ', Tabelas 10 e 11 (p. 21.22, PDF 626)' },
       ladoPeca: { t: 'op', p: '', rotulo: 'Lado da peça', ops: [{ v: '', t: '' }, { v: 'principal', t: 'Passagem direta' }, { v: 'ramal', t: 'Ramal' }] },
+      // curvas (v0.9.0, CV1, CV3, CV5): vazios = em uso 90°, o raio padrão da peça e a largura
+      angulo: { t: 'num', p: null, nulo: true, min: 0, max: 180, rotulo: 'Ângulo', un: '°', casas: 0,
+                fonte: 'Curvas: 90° ou 45° (Kθ da peça 3-1, ' + MC.FONTE + ', p. 10); vazio = 90°' },
+      raio: { t: 'num', p: null, nulo: true, min: 0, max: 5, rotulo: 'Raio', un: '', casas: 2,
+              fonte: 'Curvas: r/D (circular) ou r/W (retangular e oval) entre os valores tabelados da peça; vazio = 1,0 (2 veias: 0,80; 3 veias: 0,60). Premissa do app; NBR 16401-1:2024, 10.5.1: raio especificado em projeto' },
+      ladoCurva: { t: 'op', p: '', rotulo: 'Lado que curva', ops: [{ v: '', t: '' }, { v: 'largura', t: 'Largura' }, { v: 'altura', t: 'Altura' }],
+                   fonte: 'Curvas de duto retangular e oval: W é o lado no plano da curva (figuras da seção 3 do ' + MC.FONTE + '); vazio = largura' },
       c: { t: 'num', p: null, nulo: true, livre: true, min: -5, max: 50, rotulo: 'Coeficiente C', un: '', casas: 3 },
       qtd: { t: 'num', p: 1, nulo: true, min: 0, max: 100, rotulo: 'Quantidade', un: '', casas: 0 },
       obs: { t: 'txt', p: '', rotulo: 'Observação' }
@@ -3586,6 +4310,13 @@ window.HVAC = window.HVAC || {};
             } else {
               r = tabela4(tab, mm, x.param, x.fonte);
               if (r && r.k !== null) { k = r.k; fonte = r.fonte; met = 'T4'; }
+            }
+          } else if (x.metodo === 'T4_25') {
+            // AC1 (v0.9.0): Tabela 4 pelo DN equivalente; abaixo de 25 mm, o valor de 25 mm - CONFERIR
+            r = tabela4(tab, Math.max(mm, 25), x.param, x.fonte);
+            if (r && r.k !== null) {
+              k = r.k; met = 'T4';
+              fonte = mm < 25 ? x.fonte + ' — DN ' + mm + ' mm abaixo da tabela: valor de 25 mm adotado - CONFERIR' : r.fonte;
             }
           } else if (x.metodo === 'CRANE') {
             if (mm >= 15) { k = parseFloat(x.param) * fT(ft, mm); }
@@ -4455,7 +5186,7 @@ window.HVAC = window.HVAC || {};
   var ENVELOPE = ['formato', 'versaoFormato', 'versaoApp', 'versaoPlataforma', 'projeto', 'resultados'];
   var NOME_LISTA = { trechos: 'Trecho', conexoes: 'Conexão', equipamentos: 'Equipamento' };
   var NOME_GRUPO_AR = { premissas: 'Ar dos dutos', metodo: 'Método dos dutos', criterios: 'Critérios dos dutos' };
-  var NOME_LISTA_AR = { trechos: 'Trecho de ar', singularidades: 'Singularidade', componentes: 'Componente' };
+  var NOME_LISTA_AR = { trechos: 'Trecho de ar', singularidades: 'Conexão de duto', componentes: 'Componente' };
   // critérios dos dutos que entraram depois do formato 2 (v0.5.0): ausentes no arquivo, adotam o padrão sem linha no relatório
   var CALADOS_AR = ['tolVazaoEquip', 'rhoCat'];
   // bomba existente (sessão AG1, v0.6.0): idem
@@ -4941,7 +5672,7 @@ window.HVAC = window.HVAC || {};
    Especificação: ESPECIFICACAO_R1.md (sessão R1, 2026-10-09), aprovada com as diferenças DA1 a DA14.
    Ordem: ar da rede → estrutura (peça Rede) → vazões das bocas para o ventilador → geometria → velocidade real e
    pressão dinâmica → atrito no circular equivalente (Darcy e Colebrook, peça Atrito) → flexível (fator de compressão)
-   → singularidades (C × pv da velocidade real) → componentes → acumulado, boca crítica e desbalanceamento por lado →
+   → conexões (C × pv da velocidade real) → componentes → acumulado, boca crítica e desbalanceamento por lado →
    ventilador (vazão com o vazamento; pressão total) → superfície e classe de vazamento → dimensão sugerida →
    situação e avisos. Fontes: ASHRAE Fundamentals 2021 SI, cap. 21 (Eq. 18 a 28 e 29 a 33) e NBR 16401-1:2024, seção 10.
    Unidades: vazão em m³/s (entrada em m³/h), dimensões em mm, área em m², pressão em Pa. Sem DOM. */
@@ -5115,12 +5846,13 @@ window.HVAC = window.HVAC || {};
     }
     var q = R.vazoes(est, direta, fator);
 
-    // 3) singularidades e componentes, ligados à 1ª linha com o ID do trecho
+    // 3) conexões e componentes, ligados à 1ª linha com o ID do trecho
     var singDe = [], compDe = [], orfas = 0;
     for (i = 0; i < n; i++) { singDe.push([]); compDe.push([]); }
     function linhaDe(id) { var ch = R.chave(id); return (ch !== '' && est.primeira[ch] !== undefined) ? est.primeira[ch] : -1; }
     var S = (rede.singularidades || []).map(function (y) {
-      var li = linhaDe(y.trecho), d = vazio(y.peca) ? null : tabAr.derivacao(y.peca);
+      var li = linhaDe(y.trecho), cv = vazio(y.peca) ? null : M.curvas.peca(y.peca);
+      var d = (vazio(y.peca) || cv) ? null : tabAr.derivacao(y.peca);
       var lp = y.ladoPeca === 'ramal' ? 'ramal' : (y.ladoPeca === 'principal' ? 'principal' : '');
       var cc = numero(y.c) ? y.c : ((d && lp) ? d[lp] : null), qtd = numero(y.qtd) ? y.qtd : 1;
       // Q2 (T3b): as peças SD5 das Tab. 10 e 11 são derivações de insuflamento (divergentes); no retorno a junção é
@@ -5130,7 +5862,10 @@ window.HVAC = window.HVAC || {};
       var o = {
         i: li, trecho: txt(y.trecho), descricao: txt(y.descricao), peca: txt(y.peca), ladoPeca: lp, c: cc,
         origemC: numero(y.c) ? 'informado' : (cc !== null ? 'tabela' : ''), fonte: fonteD,
-        qtd: qtd, cTotal: cc === null ? null : cc * qtd, dp: null, orfa: li < 0, obs: txt(y.obs)
+        qtd: qtd, cTotal: cc === null ? null : cc * qtd, dp: null, orfa: li < 0, obs: txt(y.obs),
+        // curvas (v0.9.0): o C sai no passo 4, com a seção e a velocidade do trecho; o C digitado tem prioridade
+        curva: cv, angulo: numero(y.angulo) ? y.angulo : null, raio: numero(y.raio) ? y.raio : null,
+        ladoCurva: y.ladoCurva === 'altura' ? 'altura' : (y.ladoCurva === 'largura' ? 'largura' : ''), calcCurva: null, motivoC: ''
       };
       if (li < 0) { orfas++; } else { singDe[li].push(o); }
       return o;
@@ -5194,6 +5929,15 @@ window.HVAC = window.HVAC || {};
           }
         }
       }
+      // C das curvas (CV1 a CV9): peça da seção 3 do Fitting Loss Coefficients, com a seção e a velocidade deste trecho
+      singDe[i].forEach(function (o) {
+        if (!o.curva || o.origemC === 'informado') { return; }
+        var cr = M.curvas.calcular(tabAr, o.peca, {
+          angulo: o.angulo, raio: o.raio, lado: o.ladoCurva, forma: t.forma, a: t.a, b: t.b, v: t.v, dh: t.dh, rho: ar.rho, mu: ar.mu, nome: o.descricao
+        });
+        o.calcCurva = cr; o.c = cr.c; o.origemC = cr.ok ? 'tabela' : ''; o.fonte = cr.fonte; o.motivoC = cr.ok ? '' : cr.motivo;
+        o.cTotal = cr.ok ? cr.c * o.qtd : null;
+      });
       somaC = 0; ruim = false;
       singDe[i].forEach(function (o) {
         if (o.cTotal === null) { ruim = true; return; }
@@ -5224,7 +5968,7 @@ window.HVAC = window.HVAC || {};
       else if (precisaDim && !g.ok) { motivo = g.motivo; }
       else if (precisaDim && t.eps === null) { motivo = 'material não encontrado'; }
       else if (e.forma === 'flexivel' && numero(e.compressao) && e.compressao < 0) { motivo = 'compressão negativa'; }
-      else if (ruim) { motivo = 'singularidade sem coeficiente'; }
+      else if (ruim) { motivo = 'conexão sem coeficiente'; }
       else if (x) { motivo = 'componente sem ΔP'; }
       else if (precisaDim && (!p || (p.re >= M.atrito.RE_LAMINAR && p.residuo > M.atrito.RESIDUO_MAX))) { motivo = 'Colebrook sem convergência'; }
       t.consistencia = motivo === '' ? 'OK' : motivo;
@@ -5344,7 +6088,7 @@ window.HVAC = window.HVAC || {};
           + ' m³/h): vale a informada, e a vazão do ventilador deixa de ser a soma das bocas.');
       }
       if (t.boca && t.nSing === 0 && t.nComp === 0) {
-        aviso(t, 'bocaSemSaida', 'Boca sem difusor, grelha ou perda de saída informada: lance o componente ou a singularidade da saída.');
+        aviso(t, 'bocaSemSaida', 'Boca sem difusor, grelha ou perda de saída informada: lance o componente ou a conexão da saída.');
       }
       if (t.v !== null && !(ruido && numero(M.secao.circular(t.forma) ? ruido.circular : ruido.retangular))) { semRuido++; }
       if (ruido && t.v !== null) {
@@ -5377,7 +6121,10 @@ window.HVAC = window.HVAC || {};
           aviso(t, 'flexivelEstimado', 'Perda do flexível estimada com rugosidade de ' + br(t.eps, 1) + ' mm (ASHRAE Fundamentals 2021, cap. 21, p. 21.6); a NBR 16401-1:2024, 10.2.2.3, pede o dado do fabricante.');
         }
       }
-      if (singDe[i].some(function (o) { return o.origemC === 'tabela'; })) {
+      singDe[i].forEach(function (o) {
+        ((o.calcCurva && o.calcCurva.avisos) || []).forEach(function (a) { aviso(t, a.tipo, a.texto); });
+      });
+      if (singDe[i].some(function (o) { return o.origemC === 'tabela' && !o.curva; })) {
         // Q13 (T3b): as razões deste trecho em relação ao montante (o tronco combinado), ao lado das da tabela
         var mt = est.pai[i] >= 0 ? T[est.pai[i]] : null, razoes = '';
         if (mt && numero(t.q) && numero(mt.q) && mt.q > 0 && numero(t.area) && numero(mt.area) && mt.area > 0) {
@@ -5509,7 +6256,7 @@ window.HVAC = window.HVAC || {};
       avisos.push({
         tipo: 'pressaoEquipamento', texto: 'A pressão ' + (EQ.base === 'estatica' ? 'estática' : 'total (sem a velocidade na descarga, a favor da segurança)') + ' exigida pela rede ('
           + br(EQ.pExigida, 1) + ' Pa) supera em ' + br(-EQ.folga, 1) + ' Pa a pressão estática externa disponível do equipamento (' + br(EQ.pDispCorr, 1) + ' Pa no ar da rede; '
-          + br(EQ.pDisp, 1) + ' Pa no catálogo, a ' + br(EQ.rhoCat, 3) + ' kg/m³): rever os dutos, as singularidades e os componentes, ou o equipamento.'
+          + br(EQ.pDisp, 1) + ' Pa no catálogo, a ' + br(EQ.rhoCat, 3) + ' kg/m³): rever os dutos, as conexões e os componentes, ou o equipamento.'
       });
     }
     // DT2: calor sensível que as bocas do insuflamento levam (W), pela conta da vazão ao contrário (q · ρ · cp · ΔT), para
@@ -6517,13 +7264,13 @@ window.HVAC = window.HVAC || {};
   function inicioDutos(E, U, R) {
     var p = E.projeto;
     return C.cabeca('Dutos HVAC: dutos de ar', p.nome || 'Projeto sem nome',
-        'Redes de dutos de ar pelo método da perda de carga constante: trechos, singularidades, componentes, dimensão sugerida, boca crítica e ventilador. ' +
+        'Redes de dutos de ar pelo método da perda de carga constante: trechos, conexões, componentes, dimensão sugerida, boca crítica e ventilador. ' +
         'Serve à readequação de linhas com o equipamento existente: a vazão nominal e a pressão estática disponível dele, informadas na rede, são comparadas com a rede nova. NBR 16401-1:2024 e ASHRAE Fundamentals 2021.') +
       '<div class="cartao"><h2>Projeto aberto</h2>' + (X.inicioAr ? X.inicioAr(E, R) : '') + acoesInicio(U) + '</div>' +
       '<div class="cartao"><h2>Os cinco passos</h2><ul class="pend">' +
         '<li><b>1</b><span><a href="#/projeto">Projeto</a>: identificação; ar, método e critérios dos dutos. Cada padrão aparece escrito, com a fonte.</span></li>' +
         '<li><b>2</b><span><a href="#/unidades">Unidades</a>: cadastro dos equipamentos (fancoil, built-in, self), com o calor sensível que as bocas dividem. Importa da carga térmica.</span></li>' +
-        '<li><b>3</b><span><a href="#/dutos">Dutos de ar</a>: uma rede por ventilador, com o equipamento existente, e uma linha por trecho, com a dimensão sugerida. A linha abre o trecho, com as singularidades, os componentes e a conta passo a passo.</span></li>' +
+        '<li><b>3</b><span><a href="#/dutos">Dutos de ar</a>: uma rede por ventilador, com o equipamento existente, e uma linha por trecho, com a dimensão sugerida. A linha abre o trecho, com as conexões, os componentes e a conta passo a passo.</span></li>' +
         '<li><b>4</b><span><a href="#/resultados">Resultados</a>: ventilador e equipamento, bocas críticas, balanceamento e vazamento. Cada número abre a conta.</span></li>' +
         '<li><b>5</b><span><a href="#/memorial">Memorial</a>: o que ver antes de emitir e a folha para imprimir, com método, premissas, trechos, ventilador e referências.</span></li>' +
       '</ul><p class="fraco" style="margin-top:12px">Dados do app: <a href="#/referencias" data-g="atalho-referencias">Referências</a>, com as tabelas dos dutos usadas nas contas, a fonte e o selo de cada linha. ' +
@@ -6560,7 +7307,7 @@ window.HVAC = window.HVAC || {};
     var p = E.projeto, ok = valido(R), b = R.bomba;
     return C.cabeca('Redes HVAC: água gelada e dutos de ar', p.nome || 'Projeto sem nome',
         'Redes de água gelada em árvore: perda de carga por Darcy-Weisbach com Colebrook, conexões pelo método K, equipamentos, circuito crítico e bomba. ' +
-        'Redes de dutos de ar pelo método da perda de carga constante: trechos, singularidades, componentes, boca crítica e ventilador. NBR 16401-1:2024 e ASHRAE Fundamentals 2021.') +
+        'Redes de dutos de ar pelo método da perda de carga constante: trechos, conexões, componentes, boca crítica e ventilador. NBR 16401-1:2024 e ASHRAE Fundamentals 2021.') +
       '<div class="cartao"><h2>Projeto aberto</h2><h3 class="sub-t" style="margin-top:0">Água gelada</h3><div class="kpis">' +
         C.kpi('Trechos', String(R.contagem.trechos), esc(textoSituacao(R))) +
         C.kpi('Vazão da bomba', ok ? marca('bomba.q', n(b.q, 3)) + ' m³/h' : '—') +
@@ -6571,7 +7318,7 @@ window.HVAC = window.HVAC || {};
         '<li><b>1</b><span><a href="#/projeto">Projeto</a>: identificação, sistema, fluido, critérios e bomba da água gelada; ar, método e critérios dos dutos. Cada padrão aparece escrito, com a fonte.</span></li>' +
         '<li><b>2</b><span><a href="#/unidades">Unidades</a>: cadastro dos equipamentos (fancoil, built-in, self), com o calor total, que serve à água gelada, e o calor sensível, que serve aos dutos. Importa da carga térmica.</span></li>' +
         '<li><b>3</b><span><a href="#/rede">Água gelada</a>: uma linha por trecho, com o resultado na própria linha. A linha abre o trecho, com as conexões, os equipamentos e a conta passo a passo.</span></li>' +
-        '<li><b>4</b><span><a href="#/dutos">Dutos de ar</a>: uma rede por ventilador e uma linha por trecho, com a dimensão sugerida. A linha abre o trecho, com as singularidades, os componentes e a conta passo a passo.</span></li>' +
+        '<li><b>4</b><span><a href="#/dutos">Dutos de ar</a>: uma rede por ventilador e uma linha por trecho, com a dimensão sugerida. A linha abre o trecho, com as conexões, os componentes e a conta passo a passo.</span></li>' +
         '<li><b>5</b><span><a href="#/resultados">Resultados</a>: da água gelada (bomba, circuito crítico, balanceamento, menor DN) e dos dutos de ar (ventilador, bocas críticas, balanceamento, vazamento). Cada número abre a conta.</span></li>' +
         '<li><b>6</b><span><a href="#/memorial">Memorial</a>: o que ver antes de emitir e a folha para imprimir, com método, premissas, trechos, bomba, ventilador e referências, da água gelada e dos dutos de ar.</span></li>' +
       '</ul><p class="fraco" style="margin-top:12px">Dados do app: <a href="#/referencias" data-g="atalho-referencias">Referências</a>, com todas as tabelas usadas nas contas, a fonte e o selo de cada linha.</p></div>' +
@@ -6751,7 +7498,7 @@ window.HVAC = window.HVAC || {};
     }
     return '<div class="acoes barra-tab mais-acoes so-celular"><span class="fraco">Mais ações</span>' +
       bt('sobe', '↑', 'Mover para cima', i === 0) + bt('desce', '↓', 'Mover para baixo', i === nT - 1) +
-      bt('dup', 'Duplicar', tipo === 'trecho' ? 'Duplicar o trecho, com as conexões e os equipamentos' : 'Duplicar o trecho, com as singularidades e os componentes', false) +
+      bt('dup', 'Duplicar', tipo === 'trecho' ? 'Duplicar o trecho, com as conexões e os equipamentos' : 'Duplicar o trecho, com as conexões e os componentes', false) +
       bt('del', '×', 'Excluir o trecho', false, 'perigo') + '</div>';
   };
 
@@ -6950,7 +7697,14 @@ window.HVAC = window.HVAC || {};
   function htmlOpcoes(lista, valor) {
     var ops = lista.map(function (o) { return typeof o === 'string' ? { v: o, t: o } : o; });
     if (!ops.some(function (o) { return o.v === valor; })) { ops.unshift({ v: valor, t: valor === '' ? '—' : valor + ' (fora da lista)' }); }
-    return ops.map(function (o) { return '<option value="' + esc(o.v) + '"' + (o.v === valor ? ' selected' : '') + '>' + esc(o.t) + '</option>'; }).join('');
+    // o.g (v0.9.0): opções seguidas com o mesmo grupo ficam num <optgroup>
+    var h = '', g = '';
+    ops.forEach(function (o) {
+      var og = o.g || '';
+      if (og !== g) { h += (g ? '</optgroup>' : '') + (og ? '<optgroup label="' + esc(og) + '">' : ''); g = og; }
+      h += '<option value="' + esc(o.v) + '"' + (o.v === valor ? ' selected' : '') + '>' + esc(o.t) + '</option>';
+    });
+    return h + (g ? '</optgroup>' : '');
   }
 
   // atributos da célula: classes e, na tabela empilhável, o rótulo da coluna (no computador nada disso aparece)
@@ -6973,7 +7727,8 @@ window.HVAC = window.HVAC || {};
     }
     if (col.tipo === 'sel') {
       var val = v === null || v === undefined ? '' : String(v);
-      return '<td' + cls + '><select' + comum + ' data-tipo="sel">' + htmlOpcoes(col.opcoes(x.l, x.i), val) + '</select></td>';
+      // col.numerico (v0.9.0): seletor de número; vazio grava null
+      return '<td' + cls + '><select' + comum + (col.numerico ? ' data-tipo="num" data-anulavel="1"' : ' data-tipo="sel"') + '>' + htmlOpcoes(col.opcoes(x.l, x.i), val) + '</select></td>';
     }
     if (col.tipo === 'num') {
       return '<td' + cls + '><input class="num" type="text" inputmode="decimal" autocomplete="off"' + comum + ' data-tipo="' + (def.int ? 'int' : 'num') + '"' + (def.nulo ? ' data-anulavel="1"' : '') + (def.livre ? ' data-negativo="1"' : '') +
@@ -7006,7 +7761,9 @@ window.HVAC = window.HVAC || {};
         res.map(function (c) {
           return '<td' + attrTd(['res', c.num ? 'num' : '', o.empilha && !c.num ? 'largo' : ''], o.empilha ? ' data-rotulo="' + esc(semQuebra(c.t)) + '"' : '') + '>' + (r ? c.v(r, x.i) : '—') + '</td>';
         }).join('') +
-        (o.acoes ? '<td class="acoes-linha' + (o.empilha ? ' largo' : '') + '">' + o.acoes(x.i) + '</td>' : '') + '</tr>';
+        (o.acoes ? '<td class="acoes-linha' + (o.empilha ? ' largo' : '') + '">' + o.acoes(x.i) + '</td>' : '') +
+        // o.extra (v0.9.0): conteúdo só do celular, dentro da linha aberta (a figura da curva, por exemplo)
+        (function () { var h = o.extra ? o.extra(x, r) : ''; return h ? '<td class="so-celular largo extra-linha">' + h + '</td>' : ''; })() + '</tr>';
     }).join('');
     if (!o.linhas.length) { corpo = '<tr><td class="vazio" colspan="' + (o.colunas.length + res.length + (o.acoes ? 1 : 0)) + '">' + esc(o.vazio || 'Nenhuma linha.') + '</td></tr>'; }
     return '<div class="tabela-rolo' + (o.rolo ? ' ' + o.rolo : '') + '"><table class="tab-edit' + (o.empilha ? ' empilha' : '') + '" id="' + o.id + '" style="min-width:' + Math.round(largura * 0.88) + 'px"><colgroup>' + cols + '</colgroup><thead><tr>' + cab +
@@ -7325,6 +8082,7 @@ window.HVAC = window.HVAC || {};
       { t: 'Ø<br>mm', k: 'd', tipo: 'num', w: 52, so: function (l) { return M.secao.circular(l.forma); } },
       { t: 'Largura<br>mm', k: 'a', tipo: 'num', w: 52, so: function (l) { return l.forma === 'retangular' || l.forma === 'oval'; } },
       { t: 'Altura<br>mm', k: 'b', tipo: 'num', w: 52, so: function (l) { return l.forma === 'retangular' || l.forma === 'oval'; } },
+      { t: 'Lado fixo<br>mm', k: 'ladoFixo', tipo: 'num', w: 52, so: function (l) { return l.forma === 'retangular' || l.forma === 'oval'; } },
       { t: 'Compr.<br>m', k: 'L', tipo: 'num', w: 50 }
     ];
     var resultados = [
@@ -7352,10 +8110,10 @@ window.HVAC = window.HVAC || {};
       classe: function (i) { return ok && noCaminho[ch(rd.trechos[i].id)] ? 'no-caminho' : ''; },
       wAcoes: 176,
       acoes: function (i) {
-        return '<a class="mini" href="#/duto/' + i + '" title="Abrir o trecho: singularidades, componentes e a conta">Abrir</a>' +
+        return '<a class="mini" href="#/duto/' + i + '" title="Abrir o trecho: conexões, componentes e a conta">Abrir</a>' +
           '<button type="button" class="mini" data-acao="duto-sobe" data-i="' + i + '" title="Mover para cima" aria-label="Mover para cima"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
           '<button type="button" class="mini" data-acao="duto-desce" data-i="' + i + '" title="Mover para baixo" aria-label="Mover para baixo"' + (i === nT - 1 ? ' disabled' : '') + '>↓</button>' +
-          '<button type="button" class="mini" data-acao="duto-dup" data-i="' + i + '" title="Duplicar o trecho, com as singularidades e os componentes">Duplicar</button>' +
+          '<button type="button" class="mini" data-acao="duto-dup" data-i="' + i + '" title="Duplicar o trecho, com as conexões e os componentes">Duplicar</button>' +
           '<button type="button" class="mini perigo" data-acao="duto-del" data-i="' + i + '" title="Excluir o trecho" aria-label="Excluir o trecho">×</button>';
       },
       vazio: 'Nenhum trecho ainda. Comece pelo trecho que sai do ventilador (montante vazio) e escolha o lado.',
@@ -7404,12 +8162,12 @@ window.HVAC = window.HVAC || {};
         X.plural(c.avisos, 'aviso', 'avisos') + '</span></div>' +
       tabela + (nT ? cartoes : '<p class="fraco so-celular" style="margin-top:12px">Nenhum trecho ainda. Comece pelo trecho que sai do ventilador (montante vazio) e escolha o lado.</p>') +
       '<datalist id="lista-ids-ar">' + lista + '</datalist>' +
-      (c.orfas ? '<p class="msg-tela alerta">' + X.plural(c.orfas, 'linha órfã', 'linhas órfãs') + ': singularidade ou componente de um trecho que não existe mais. ' +
+      (c.orfas ? '<p class="msg-tela alerta">' + X.plural(c.orfas, 'linha órfã', 'linhas órfãs') + ': conexão ou componente de um trecho que não existe mais. ' +
         '<button type="button" class="botao leve" data-acao="orfas-ar-del">Excluir as linhas órfãs</button></p>' : '') +
       (c.trechos ? '<ul class="em-uso-lista" data-g="lados">' + linhaLado(r.lados.insuflamento, met) + linhaLado(r.lados.retorno, met) + '</ul>' : '') +
-      '<p class="fraco" style="margin-top:10px">Colunas de fundo cinza são resultados. ΔP do trecho = atrito + singularidades + componentes. Linha com a barra lateral faz parte do caminho de uma boca crítica. ' +
+      '<p class="fraco" style="margin-top:10px">Colunas de fundo cinza são resultados. ΔP do trecho = atrito + conexões + componentes. Linha com a barra lateral faz parte do caminho de uma boca crítica. ' +
         'A coluna "Sugerida" é a menor dimensão padrão que atende ao método (' + (met.modo === 'velocidade' ? 'velocidade do primeiro trecho' : 'perda por metro de ' + f.campo(met.paM, 2) + ' Pa/m') +
-        '); passe o ponteiro para ver a velocidade e a perda dela. Velocidade máxima da classe de ' + n(cri.classePressao, 0) + ' Pa: ' +
+        '); passe o ponteiro para ver a velocidade e a perda dela. No retangular, com o "Lado fixo" vazio a sugestão é quadrada; preenchido (a altura que o forro permite, por exemplo), a sugestão mantém essa medida e calcula a outra. Velocidade máxima da classe de ' + n(cri.classePressao, 0) + ' Pa: ' +
         (TA.classe(cri.classePressao) && numero(TA.classe(cri.classePressao).vMax) ? n(TA.classe(cri.classePressao).vMax, 1) + ' m/s' : 'sem limite na tabela') + '. O Enter leva ao campo seguinte.</p>' +
       C.bloco('arRedeT', '·', 'Temperatura do ar própria desta rede', rd.tAr === null ? 'vale a do projeto' : 'própria desta rede', f.campo(tAr, 1), '°C em uso', function () {
         return '<div class="grade g2">' + campoR('tAr', 'opcional; vazio = a temperatura do ar no duto do projeto (' + f.campo(R.dutos.ar.tAr, 1) + ' °C)') +
@@ -7452,51 +8210,87 @@ window.HVAC = window.HVAC || {};
         (circ ? campoD('d', t.forma === 'flexivel' ? 'diâmetro nominal do flexível' : '', { rotulo: 'Diâmetro' }) : '') +
         (ladoAB ? campoD('a', '', { rotulo: t.forma === 'oval' ? 'Eixo maior' : 'Largura' }) + campoD('b', '', { rotulo: t.forma === 'oval' ? 'Eixo menor' : 'Altura' }) +
           campoD('ladoFixo', t.forma === 'oval' ? 'eixo menor que a sugestão mantém; no oval é obrigatório para haver sugestão' : 'altura que a sugestão mantém; vazio = sugestão quadrada') : '') +
-        campoD('L', t.forma === '' ? '' : 'vazio ou 0: o trecho só tem singularidades e componentes') +
+        campoD('L', t.forma === '' ? '' : 'vazio ou 0: o trecho só tem conexões e componentes') +
         (t.forma !== '' && t.forma !== 'flexivel' ? C.seletor({ id: X.id(base + 'material'), caminho: base + 'material', rotulo: 'Material', valor: t.material, opcoes: opMat, nota: t.material === '' ? 'em uso, o do projeto: ' + (matProjeto ? matProjeto.nome : cri.material) : '' }) : '') +
         (t.forma !== '' ? campoD('epsManual', 'em uso: ' + (y.eps === null ? '—' : f.campo(y.eps, 3) + ' mm') + (y.origemEps ? ' (' + esc(y.origemEps) + ')' : '')) : '') +
         (t.forma === 'flexivel' ? campoD('paMFab', 'do catálogo, para o duto esticado; vazio = o app estima (ε de ' + (y.eps === null ? '0,9' : f.campo(y.eps, 1)) + ' mm)') +
           campoD('compressao', 'em uso: ' + f.campo(t.compressao === null ? 0 : t.compressao, 0) + ' %' + (t.compressao === null ? ' (vazio = esticado)' : '') + (numero(y.pdcf) ? ' · fator de correção ' + n(y.pdcf, 3) : '')) : '') + '</div>' +
         (y.fonteEps && t.forma !== '' ? '<p class="nota-tab"><b>Rugosidade em uso:</b> ' + f.campo(y.eps, 3) + ' mm (' + esc(y.origemEps) + '). ' + X.seloFonte(y.fonteEps) + '</p>' : '') + '</div>';
 
-    // bloco 2: singularidades
-    var dSing = CAT.arSingularidade, linhasS = [], baseS = baseR + 'singularidades';
+    // bloco 2: conexões
+    var dSing = CAT.arSingularidade, linhasS = [], baseS = baseR + 'singularidades', MC = M.curvas, retOval = t.forma === 'retangular' || t.forma === 'oval';
     rd.singularidades.forEach(function (s, j) { if (chave !== '' && ch(s.trecho) === chave) { linhasS.push({ i: j, l: s }); } });
+    // curvas (v0.9.0, TC2 e TC3): a lista de peças segue a forma do trecho; ângulo, raio e lado só com curva
+    function curvaDe(l) { return MC.peca(l.peca); }
+    function raioEmUso(l) { var p = curvaDe(l); return numero(l.raio) ? l.raio : (p ? p.raioPadrao : null); }
+    function igual(a, b) { return numero(a) && numero(b) && Math.abs(a - b) < 1e-9; }
+    function opsAngulo(l) {
+      var p = curvaDe(l), L = [{ v: '', t: '90° (em uso)' }];
+      if (l.angulo === 90) { L.push({ v: '90', t: '90°' }); }
+      if (p && MC.angulos(p, raioEmUso(l)).indexOf(45) >= 0) { L.push({ v: '45', t: '45°' }); }
+      return L;
+    }
+    function opsRaio(l) {
+      var p = curvaDe(l), L;
+      if (!p || !p.raio) { return [{ v: '', t: '—' }]; }
+      L = [{ v: '', t: MC.rotuloRaio(TA, p, p.raioPadrao) + ' (em uso)' }];
+      MC.raios(TA, p).forEach(function (r) { if (!igual(r, p.raioPadrao) || igual(l.raio, r)) { L.push({ v: String(r), t: MC.rotuloRaio(TA, p, r) }); } });
+      return L;
+    }
+    function opsLadoCurva(l) { return [{ v: '', t: 'Largura (em uso)' }].concat(l.ladoCurva === 'largura' ? [{ v: 'largura', t: 'Largura' }] : [], [{ v: 'altura', t: 'Altura' }]); }
+    function figuraCurva(p, raio) {
+      var FG = H.dados.figurasCurvas, fg = FG && FG[MC.figura(p, raio)];
+      if (!fg) { return ''; }
+      return '<figure class="fig-curva"><img src="' + fg.src + '" width="' + fg.largura + '" height="' + fg.altura + '" alt="' + esc('Figura da peça ' + p.tabela + ': ' + p.nome) + '">' +
+        '<figcaption class="fraco">' + esc(MC.legenda(p, fg.pagina)) + '</figcaption></figure>';
+    }
     var tabS = G.montar({
       id: 'tab-sing', base: baseS, linhas: linhasS, cat: dSing,
       colunas: [
-        { t: 'Descrição', k: 'descricao', tipo: 'txt', w: 170 },
-        { t: 'Peça das Tabelas 10 e 11', k: 'peca', tipo: 'sel', w: 250, opcoes: function () { return dSing.peca.ops; } },
-        { t: 'Lado da peça', k: 'ladoPeca', tipo: 'sel', w: 116, opcoes: function () { return [{ v: '', t: '— escolha —' }, { v: 'principal', t: 'Passagem direta' }, { v: 'ramal', t: 'Ramal' }]; }, so: function (l) { return l.peca !== '' || l.ladoPeca !== ''; } },
+        { t: 'Descrição', k: 'descricao', tipo: 'txt', w: 150 },
+        { t: 'Peça', k: 'peca', tipo: 'sel', w: 220, opcoes: function () { return dSing.peca.ops.filter(function (o) { return !o.formas || o.formas.indexOf(t.forma) >= 0; }); } },
+        { t: 'Ângulo', k: 'angulo', tipo: 'sel', numerico: true, w: 86, opcoes: opsAngulo, so: function (l) { return !!curvaDe(l) || l.angulo !== null; } },
+        { t: 'Raio', k: 'raio', tipo: 'sel', numerico: true, w: 150, opcoes: opsRaio, so: function (l) { var p = curvaDe(l); return !!(p && p.raio) || l.raio !== null; } },
+        { t: 'Lado que curva', k: 'ladoCurva', tipo: 'sel', w: 96, opcoes: opsLadoCurva, so: function (l) { return (!!curvaDe(l) && retOval) || l.ladoCurva !== ''; } },
+        { t: 'Lado da peça', k: 'ladoPeca', tipo: 'sel', w: 116, opcoes: function () { return [{ v: '', t: '— escolha —' }, { v: 'principal', t: 'Passagem direta' }, { v: 'ramal', t: 'Ramal' }]; }, so: function (l) { return (l.peca !== '' && !curvaDe(l)) || l.ladoPeca !== ''; } },
         { t: 'C digitado', k: 'c', tipo: 'num', w: 70 },
         { t: 'Qtd.', k: 'qtd', tipo: 'num', w: 48, dica: '1' },
-        { t: 'Observação', k: 'obs', tipo: 'txt', w: 150 }
+        { t: 'Observação', k: 'obs', tipo: 'txt', w: 120 }
       ],
       resultados: [
-        { t: 'C em uso', w: 76, num: true, v: function (s) { return s.c === null ? '<span class="sit dados">' + (s.peca !== '' && s.ladoPeca === '' ? 'escolha o lado' : 'sem coeficiente') + '</span>' : n(s.c, 3); } },
+        { t: 'C em uso', w: 76, num: true, v: function (s) { return s.c === null ? '<span class="sit dados">' + (s.peca !== '' && !s.curva && s.ladoPeca === '' ? 'escolha o lado' : 'sem coeficiente') + '</span>' : n(s.c, 3); } },
         { t: 'C total', w: 60, num: true, v: function (s) { return n(s.cTotal, 3); } },
         { t: 'ΔP<br>Pa', w: 60, num: true, v: function (s) { return n(s.dp, 2); } },
         { t: 'Fonte do C', w: 96, v: function (s) { return s.origemC === 'informado' ? C.selo('alterado', 'informado', 'Coeficiente informado pelo projetista') : (s.fonte ? X.seloFonte(s.fonte) : '—'); } }
       ],
       res: function (j) { return r.singularidades[j]; },
-      acoes: function (j) { return '<button type="button" class="mini perigo" data-acao="sing-del" data-i="' + j + '" title="Excluir a singularidade" aria-label="Excluir a singularidade">×</button>'; },
-      vazio: 'Nenhuma singularidade neste trecho.',
-      // celular: campos empilhados (R4) e cada singularidade recolhida na linha-resumo, como as conexões da água (R5,
-      // estendido às singularidades pelo Francisco na M2); uma aberta por vez (U.singAberta)
+      acoes: function (j) { return '<button type="button" class="mini perigo" data-acao="sing-del" data-i="' + j + '" title="Excluir a conexão" aria-label="Excluir a conexão">×</button>'; },
+      // celular (TC4): a figura da curva dentro da conexão aberta
+      extra: function (x) { var p = curvaDe(x.l); return p ? figuraCurva(p, raioEmUso(x.l)) : ''; },
+      vazio: 'Nenhuma conexão neste trecho.',
+      // celular: campos empilhados (R4) e cada conexão recolhida na linha-resumo, como as conexões da água (R5,
+      // estendido às conexões pelo Francisco na M2); uma aberta por vez (U.singAberta)
       empilha: true, acaoResumo: 'sing-abrir', aberta: function (j) { return U.singAberta === j; },
       resumo: function (x, s) {
         var peca = x.l.peca === '' ? null : dSing.peca.ops.filter(function (o) { return o.v === x.l.peca; })[0];
         return '<span class="resumo-tit">' + esc(x.l.descricao || (peca ? peca.t : '') || '(sem descrição)') + '</span><span class="resumo-vals num">' +
           '<span><small>Qtd.</small>' + (x.l.qtd === null ? '1' : f.campo(x.l.qtd, dSing.qtd.casas)) + '</span>' +
-          (s && s.c === null ? '<span class="sit dados">' + (s.peca !== '' && s.ladoPeca === '' ? 'escolha o lado' : 'sem coeficiente') + '</span>' : '<span><small>C total</small>' + (s ? n(s.cTotal, 3) : '—') + '</span>') +
+          (s && s.c === null ? '<span class="sit dados">' + (s.peca !== '' && !s.curva && s.ladoPeca === '' ? 'escolha o lado' : 'sem coeficiente') + '</span>' : '<span><small>C total</small>' + (s ? n(s.cTotal, 3) : '—') + '</span>') +
           '<span><small>ΔP</small>' + (s ? n(s.dp, 2) : '—') + ' Pa</span></span>';
       }
     });
-    var b2 = tabS + '<div class="acoes barra-tab"><button type="button" class="botao" data-acao="sing-nova" data-i="' + i + '"' + (chave !== '' ? '' : ' disabled') + '>Acrescentar singularidade</button>' +
-      '<span class="fraco">ΣC = ' + n(y.somaC, 3) + ' · pressão de velocidade = ' + n(y.pv, 2) + ' Pa · ΔP das singularidades = ' + n(y.dpSing, 2) + ' Pa</span></div>' +
-      '<p class="fraco">Curvas, transições, derivações e a perda de saída: lance o coeficiente C da peça, ou escolha uma derivação das Tabelas 10 e 11 e o lado dela. O C digitado tem prioridade sobre o da tabela. ' +
+    // computador (TC4): abaixo da tabela, a figura de cada peça de curva usada no trecho (uma vez cada)
+    var figsVistas = {}, figs = '';
+    linhasS.forEach(function (x) {
+      var p = curvaDe(x.l), k = p ? MC.figura(p, raioEmUso(x.l)) : '';
+      if (p && !figsVistas[k]) { figsVistas[k] = true; figs += figuraCurva(p, raioEmUso(x.l)); }
+    });
+    if (figs) { tabS += '<div class="figs-curvas so-computador">' + figs + '</div>'; }
+    var b2 = tabS + '<div class="acoes barra-tab"><button type="button" class="botao" data-acao="sing-nova" data-i="' + i + '"' + (chave !== '' ? '' : ' disabled') + '>Acrescentar conexão</button>' +
+      '<span class="fraco">ΣC = ' + n(y.somaC, 3) + ' · pressão de velocidade = ' + n(y.pv, 2) + ' Pa · ΔP das conexões = ' + n(y.dpSing, 2) + ' Pa</span></div>' +
+      '<p class="fraco">Curvas: escolha a peça, o ângulo e o raio, e o C sai das tabelas da ASHRAE. Derivações: escolha uma das Tabelas 10 e 11 e o lado. Transições, a perda de saída e outras peças: lance o C. O C digitado tem prioridade sobre o da tabela. ' +
         'A perda usa a pressão de velocidade deste trecho, com a velocidade real da seção: lance cada peça no trecho a que o coeficiente dela se refere. Quantidade vazia vale 1.</p>' +
-      (y.forma === '' && linhasS.length ? '<p class="msg-tela alerta">Trecho sem forma: sem a seção não há pressão de velocidade para as singularidades.</p>' : '');
+      (y.forma === '' && linhasS.length ? '<p class="msg-tela alerta">Trecho sem forma: sem a seção não há pressão de velocidade para as conexões.</p>' : '');
 
     // bloco 3: componentes
     var linhasC = [], baseC = baseR + 'componentes';
@@ -7528,13 +8322,13 @@ window.HVAC = window.HVAC || {};
     var classe = TA.classe(cri.classePressao), vMaxC = classe && numero(classe.vMax) ? classe.vMax : null, ruido = TA.limiteRuido(cri.posicaoDuto, cri.nc);
     var limR = ruido ? (circ ? ruido.circular : ruido.retangular) : null, temGeo = numero(y.area);
     var b4 = (y.situacao.indexOf('DADOS') === 0 ? '<p class="msg-tela erro">' + esc(y.situacao) + '. Corrija o dado para ver o resultado deste trecho' + (y.consistencia.indexOf('ciclo') >= 0 ? ' (o montante leva de volta ao próprio trecho)' : '') + '.</p>' : '') +
-      (primeira || chave === '' ? '' : '<p class="msg-tela erro">Há outro trecho, antes deste, com o mesmo ID: as singularidades e os componentes valem para o primeiro.</p>') +
+      (primeira || chave === '' ? '' : '<p class="msg-tela erro">Há outro trecho, antes deste, com o mesmo ID: as conexões e os componentes valem para o primeiro.</p>') +
       '<div class="grade">' +
         (temGeo ? calc('Área da seção', n(y.area, 4), 'm²', 'area') + calc('Diâmetro equivalente De', n(y.de, 1), 'mm', 'de') + calc('Diâmetro hidráulico Dh', n(y.dh, 1), 'mm', 'dh') +
           calc('Velocidade real', n(y.v, 2), 'm/s', 'v') + calc('Pressão de velocidade', n(y.pv, 2), 'Pa', 'pv') + calc('Velocidade no circular equivalente', n(y.ve, 2), 'm/s', 've') +
           calc('Reynolds', n(y.re, 0), y.regime || '', 're') + calc('Fator de atrito f', n(y.f, 5), '', 'f') + calc('Perda por metro', n(y.paM, 2), 'Pa/m', 'paM') +
           calc('ΔP de atrito', n(y.dpAtrito, 2), 'Pa', 'dpAtrito') : '') +
-        calc('ΔP das singularidades', n(y.dpSing, 2), 'Pa', 'dpSing') + calc('ΔP dos componentes', n(y.dpComp, 2), 'Pa', 'dpComp') +
+        calc('ΔP das conexões', n(y.dpSing, 2), 'Pa', 'dpSing') + calc('ΔP dos componentes', n(y.dpComp, 2), 'Pa', 'dpComp') +
         calc('ΔP do trecho', n(y.dp, 2), 'Pa', 'dp') + calc('ΔP acumulado', n(y.acumulado, 2), 'Pa', 'acumulado') +
         (y.boca && ok ? calc('Excesso da boca', n(y.excesso, 2), 'Pa', 'excesso') : '') +
         (temGeo ? calc('Superfície de duto', n(y.superficie, 2), 'm²', 'superficie') : '') + '</div>' +
@@ -7574,10 +8368,10 @@ window.HVAC = window.HVAC || {};
         '<span style="margin-left:auto">' + (y.lado ? '<span class="fraco">' + NOME_LADO[y.lado] + (y.boca ? ' · boca' : '') + (ok && y.boca && critica(r, y) ? ' crítica' : '') + '</span> ' : '') + X.seloSituacaoAr(y) + '</span></div>' +
       X.maisAcoes('duto', i, nT) +
       '<div class="cartao"><h2>1. Vazão e seção</h2>' + b1 + '</div>' +
-      '<div class="cartao"><h2>2. Singularidades</h2>' + b2 + '</div>' +
+      '<div class="cartao"><h2>2. Conexões</h2>' + b2 + '</div>' +
       '<div class="cartao"><h2>3. Componentes</h2>' + b3 + '</div>' +
       '<div class="cartao"><h2>4. Resultado do trecho</h2><p class="fraco" style="margin-bottom:10px">Cada valor abre a conta, passo a passo.' +
-        (t.forma !== '' && !circ ? ' O atrito do duto ' + NOME_FORMA[t.forma] + ' é calculado no circular equivalente (De); a velocidade real vale para os limites e para as singularidades.' : '') + '</p>' + b4 + '</div>' +
+        (t.forma !== '' && !circ ? ' O atrito do duto ' + NOME_FORMA[t.forma] + ' é calculado no circular equivalente (De); a velocidade real vale para os limites e para as conexões.' : '') + '</p>' + b4 + '</div>' +
       '<div class="cartao"><h2>5. Dimensão sugerida</h2>' + b5 + '</div>' +
       '<datalist id="lista-ids-ar">' + lista + '</datalist></div>';
   };
@@ -8055,7 +8849,7 @@ window.HVAC = window.HVAC || {};
               'Diâmetro do duto circular com a mesma perda, vazão e comprimento. ' + F_GEO)];
   }
   function passoDh(t) { return p('Diâmetro hidráulico', 'Dh = 4 · A ÷ P (A em m², P em m; × 1 000 para mm)','4 × ' + n(t.area, 4) + ' ÷ ' + n(t.perimetro, 3) + ' × 1 000', n(t.dh, 1) + ' mm', 'Informativo: o atrito usa o diâmetro equivalente. ' + F_GEO); }
-  function passoV(t) { return p('Velocidade real', 'V = Q ÷ A', '(' + n(t.qM3h, 1) + ' ÷ 3 600) ÷ ' + n(t.area, 4), n(t.v, 2) + ' m/s', 'Vale para o limite da classe de pressão, o ruído e as singularidades'); }
+  function passoV(t) { return p('Velocidade real', 'V = Q ÷ A', '(' + n(t.qM3h, 1) + ' ÷ 3 600) ÷ ' + n(t.area, 4), n(t.v, 2) + ' m/s', 'Vale para o limite da classe de pressão, o ruído e as conexões'); }
   function passoPv(t, ar) { return p('Pressão de velocidade', 'pv = ρ · V² ÷ 2', n(ar.rho, 4) + ' × ' + n(t.v, 3) + '² ÷ 2', n(t.pv, 2) + ' Pa', F_VREAL); }
   function passoVe(t) {
     return p('Velocidade no circular equivalente', 'Ve = Q ÷ (π · De² ÷ 4)', '(' + n(t.qM3h, 1) + ' ÷ 3 600) ÷ (π × ' + n(t.de / 1000, 4) + '² ÷ 4)', n(t.ve, 2) + ' m/s',
@@ -8089,11 +8883,15 @@ window.HVAC = window.HVAC || {};
     var L = [];
     rede.singularidades.forEach(function (s) {
       if (s.i !== t.i) { return; }
-      L.push(p(s.descricao || s.peca || 'Singularidade', 'C × quantidade', (s.c === null ? '—' : n(s.c, 3)) + ' × ' + n(s.qtd, 0), s.cTotal === null ? 'sem coeficiente' : n(s.cTotal, 3),
-        s.origemC === 'informado' ? 'Coeficiente informado pelo projetista' : (s.origemC === 'tabela' ? 'Peça ' + s.peca + ', ' + (s.ladoPeca === 'ramal' ? 'ramal' : 'passagem direta') + ': ' + s.fonte : '')));
+      // curva (v0.9.0): primeiro o C pela tabela da peça, com os fatores
+      if (s.curva && s.origemC === 'tabela' && s.calcCurva) {
+        L.push(p((s.descricao || M.curvas.rotulo(s.curva)) + ': C da curva', 'C = ' + s.calcCurva.formula, s.calcCurva.detalhe.replace(/^C = [^=]+= /, ''), n(s.c, 3), s.fonte));
+      }
+      L.push(p(s.descricao || s.peca || 'Conexão', 'C × quantidade', (s.c === null ? '—' : n(s.c, 3)) + ' × ' + n(s.qtd, 0), s.cTotal === null ? 'sem coeficiente' : n(s.cTotal, 3),
+        s.origemC === 'informado' ? 'Coeficiente informado pelo projetista' : (s.origemC === 'tabela' ? (s.curva ? 'C da curva, na linha acima' : 'Peça ' + s.peca + ', ' + (s.ladoPeca === 'ramal' ? 'ramal' : 'passagem direta') + ': ' + s.fonte) : '')));
     });
-    if (!L.length) { return [p('ΔP das singularidades', 'nenhuma singularidade no trecho', '', n(t.dpSing, 2) + ' Pa')]; }
-    L.push(p('ΔP das singularidades', 'ΣC × pv', n(t.somaC, 3) + ' × ' + n(t.pv, 2), n(t.dpSing, 2) + ' Pa', 'pv: pressão de velocidade deste trecho, com a velocidade real. ' + F_SING));
+    if (!L.length) { return [p('ΔP das conexões', 'nenhuma conexão no trecho', '', n(t.dpSing, 2) + ' Pa')]; }
+    L.push(p('ΔP das conexões', 'ΣC × pv', n(t.somaC, 3) + ' × ' + n(t.pv, 2), n(t.dpSing, 2) + ' Pa', 'pv: pressão de velocidade deste trecho, com a velocidade real. ' + F_SING));
     return L;
   }
   function passosComp(t, rede) {
@@ -8107,7 +8905,7 @@ window.HVAC = window.HVAC || {};
     return L;
   }
   function passoTrecho(t) {
-    return p('ΔP do trecho', 'atrito + singularidades + componentes', n(t.dpAtrito, 2) + ' + ' + n(t.dpSing, 2) + ' + ' + n(t.dpComp, 2), n(t.dp, 2) + ' Pa', F_TOTAL);
+    return p('ΔP do trecho', 'atrito + conexões + componentes', n(t.dpAtrito, 2) + ' + ' + n(t.dpSing, 2) + ' + ' + n(t.dpComp, 2), n(t.dp, 2) + ' Pa', F_TOTAL);
   }
   function passosAcum(t, rede) {
     var est = rede.estrutura, cadeia = [], j = t.i, guarda = 0, L = [];
@@ -8154,11 +8952,11 @@ window.HVAC = window.HVAC || {};
       L = (t.forma === 'flexivel' && !t.estimativa ? [] : [passoVe(t), passoRe(t, ar)].concat(passosF(t))).concat(passosPaM(t, ent, ar));
     }
     else if (g === 'dpAtrito') { titulo = 'ΔP de atrito'; valor = n(t.dpAtrito, 2) + ' Pa'; if (!numero(t.dpAtrito)) { return null; } L = (t.L > 0 ? passosPaM(t, ent, ar) : []).concat([passoAtrito(t)]); }
-    else if (g === 'dpSing') { titulo = 'ΔP das singularidades'; valor = n(t.dpSing, 2) + ' Pa'; if (!numero(t.dpSing)) { return null; } L = (temV && t.nSing ? [passoV(t), passoPv(t, ar)] : []).concat(passosSing(t, rede)); }
+    else if (g === 'dpSing') { titulo = 'ΔP das conexões'; valor = n(t.dpSing, 2) + ' Pa'; if (!numero(t.dpSing)) { return null; } L = (temV && t.nSing ? [passoV(t), passoPv(t, ar)] : []).concat(passosSing(t, rede)); }
     else if (g === 'dpComp') { titulo = 'ΔP dos componentes'; valor = n(t.dpComp, 2) + ' Pa'; if (!numero(t.dpComp)) { return null; } L = passosComp(t, rede); }
     else if (g === 'dp') {
       titulo = 'ΔP do trecho'; valor = n(t.dp, 2) + ' Pa'; if (!numero(t.dp)) { return null; }
-      L = [passoAtrito(t), p('ΔP das singularidades', t.nSing ? 'ΣC × pv' : 'nenhuma singularidade no trecho', t.nSing ? n(t.somaC, 3) + ' × ' + n(t.pv, 2) : '', n(t.dpSing, 2) + ' Pa', t.nSing ? F_SING : ''),
+      L = [passoAtrito(t), p('ΔP das conexões', t.nSing ? 'ΣC × pv' : 'nenhuma conexão no trecho', t.nSing ? n(t.somaC, 3) + ' × ' + n(t.pv, 2) : '', n(t.dpSing, 2) + ' Pa', t.nSing ? F_SING : ''),
            p('ΔP dos componentes', 'soma', '', n(t.dpComp, 2) + ' Pa'), passoTrecho(t)];
     }
     else if (g === 'acumulado') { titulo = 'ΔP acumulado'; valor = n(t.acumulado, 2) + ' Pa'; if (!numero(t.acumulado)) { return null; } L = passosAcum(t, rede); }
@@ -8692,7 +9490,7 @@ window.HVAC = window.HVAC || {};
   var NOME_LADO = { insuflamento: 'Insuflamento', retorno: 'Retorno' };
   var NOME_FORMA = { circular: 'circular', retangular: 'retangular', oval: 'oval', flexivel: 'flexível' };
   // nota do que a pressão total do ventilador inclui (R4, observação 2 do revisor da R3); a mesma na tela e na folha
-  var NOTA_PTOTAL = '<b>O que a pressão total inclui:</b> atrito dos dutos, singularidades e componentes lançados nos trechos (boca crítica do insuflamento e do retorno), ' +
+  var NOTA_PTOTAL = '<b>O que a pressão total inclui:</b> atrito dos dutos, conexões e componentes lançados nos trechos (boca crítica do insuflamento e do retorno), ' +
     'efeito do sistema e acréscimo do filtro saturado. <b>Não inclui</b>, a não ser que sejam lançados como componente de um trecho: a serpentina, o filtro limpo e as ' +
     'demais perdas internas do equipamento. Na seleção do ventilador, somar essas perdas; ao comparar com a pressão disponível de um equipamento de catálogo, usar a mesma base (total ou estática).';
   var ORIGEM_Q = { informada: 'informada', calor: 'calor sensível', soma: 'soma a jusante' };
@@ -8820,7 +9618,7 @@ window.HVAC = window.HVAC || {};
       { t: 'Situação', v: function (t) { var ld = r.lados[t.lado]; return X.seloSituacaoAr(t) + (ok && t.boca && ld && ld.iCritica === t.i ? ' <span class="selo calc">crítica</span>' : ''); } }
     ], comId(r));
   }
-  var NOTA_TRECHOS_AR = 'Velocidade real da seção; pv = ρ · V² ÷ 2. O atrito do retangular e do oval é calculado no circular equivalente (De). ΔP do trecho = atrito + singularidades + componentes, ' +
+  var NOTA_TRECHOS_AR = 'Velocidade real da seção; pv = ρ · V² ÷ 2. O atrito do retangular e do oval é calculado no circular equivalente (De). ΔP do trecho = atrito + conexões + componentes, ' +
     'em pressão total, sem envelhecimento. Acumulado desde o ventilador. A superfície é o perímetro vezes o comprimento.';
 
   // ------------------------------------------------------------ balanceamento
@@ -8934,7 +9732,7 @@ window.HVAC = window.HVAC || {};
       if (t.situacao === 'REVISAR') { L.push({ onde: 'Trecho ' + t.id, nivel: 'revisar', texto: 'revisar: ' + (t.revisar || t.consistencia || '') }); }
       (t.avisos || []).forEach(function (a) { L.push({ onde: 'Trecho ' + t.id, nivel: 'aviso', texto: a.texto }); });
     });
-    if (r.contagem.orfas) { L.push({ onde: 'Rede', nivel: 'aviso', texto: X.plural(r.contagem.orfas, 'linha órfã', 'linhas órfãs') + ' de singularidade ou de componente: o trecho não existe mais, e a linha não entra na conta' }); }
+    if (r.contagem.orfas) { L.push({ onde: 'Rede', nivel: 'aviso', texto: X.plural(r.contagem.orfas, 'linha órfã', 'linhas órfãs') + ' de conexão ou de componente: o trecho não existe mais, e a linha não entra na conta' }); }
     return L;
   }
   function listaAvisosAr(r) {
@@ -9208,7 +10006,7 @@ window.HVAC = window.HVAC || {};
 <script>
 /* ==== js/interface/memorial_ar.js ==== */
 /* Redes HVAC. Memorial dos dutos de ar (ESPECIFICACAO_memorial_dutos, sessão R3): o que os dutos põem no cartão "antes de
-   emitir" e as seções dos dutos na folha (método, premissas do ar e, por rede de ar, dados da rede, trechos, singularidades
+   emitir" e as seções dos dutos na folha (método, premissas do ar e, por rede de ar, dados da rede, trechos, conexões
    e componentes, ventilador e bocas críticas, balanceamento, vazamento e avisos). Só monta HTML a partir do projeto e do
    resultado do motor (R.dutos = M.dutos.calcular); as tabelas de trechos, de caminho e de balanceamento são as de
    resultados_ar.js. Rede de ar sem trecho fica fora da folha (M1). Carrega depois de resultados_ar.js e antes de memorial.js. */
@@ -9267,6 +10065,8 @@ window.HVAC = window.HVAC || {};
   function comPressaoEquip(E, R) { return redes(E, R).some(function (x) { return x.r.ventilador.equipamento.pDisp !== null; }); }
   // alguma rede da folha traz a vazão nominal ou a pressão disponível (método da comparação)?
   function comAlgumEquip(E, R) { return redes(E, R).some(function (x) { return X.temEquipAr(x.r); }); }
+  // v0.9.0: alguma curva com o C da tabela (a linha do método das curvas só aparece com ela)
+  function comAlgumaCurva(E, R) { return redes(E, R).some(function (x) { return x.r.singularidades.some(function (o) { return o.curva && o.origemC === 'tabela' && !o.orfa; }); }); }
 
   // ------------------------------------------------------------ dados em uso (padrões, fontes e alterações)
   // um item por campo do bloco "ar" do projeto que vale para este projeto: { grupo, rotulo, valor, padrao, alterado, fonte, selo }
@@ -9311,6 +10111,14 @@ window.HVAC = window.HVAC || {};
       });
       r.singularidades.forEach(function (o) {
         if (o.orfa || o.origemC !== 'tabela' || !o.fonte) { return; }
+        if (o.curva) {
+          var tt = r.trechos[o.i] || {};
+          junta('curva|' + o.peca, { texto: 'Coeficiente C da ' + M.curvas.rotulo(o.curva) + ': C = ' + o.calcCurva.formula,
+            fonte: M.curvas.FONTE + ', peça ' + o.curva.tabela + ', p. ' + o.curva.pagina }, o.trecho);
+          if (tt.forma === 'oval') { junta('curvaOval', { texto: 'Curva de duto oval pela peça retangular', fonte: 'Premissa do app: eixos do oval como W e H; a fonte não traz curva de duto oval - CONFERIR' }, o.trecho); }
+          if (tt.forma === 'flexivel') { junta('curvaFlex', { texto: 'Curva de duto flexível pela curva estampada 3-1', fonte: 'Premissa do app: a ASHRAE remete às peças CD3-22 e CD3-23 da Duct Fitting Database; NBR 16401-1:2024, 10.2.2.3: dado do fabricante - CONFERIR' }, o.trecho); }
+          return;
+        }
         junta('c|' + o.peca + '|' + o.ladoPeca, { texto: 'Coeficiente C da peça ' + o.peca + ', ' + (o.ladoPeca === 'ramal' ? 'ramal' : 'passagem direta'), fonte: o.fonte }, o.trecho);
       });
       ordem.forEach(function (k) { L.push({ texto: mapa[k].texto + nosTrechos(r, varias, mapa[k].trechos), fonte: mapa[k].fonte }); });
@@ -9364,7 +10172,7 @@ window.HVAC = window.HVAC || {};
   }
 
   // ------------------------------------------------------------ a folha: seções comuns a todas as redes de ar
-  function tabMetodo(equip) {
+  function tabMetodo(equip, curvas) {
     var flex = TA.material(M.dutos.MATERIAL_FLEXIVEL), epsFlex = flex ? n(flex.eps, 1) : '—';
     var L = [
       ['Ar no duto', 'p ÷ p₀ = (1 − 2,25577 · 10⁻⁵ · z)^5,2559 ; ρ = 1,2 × (p ÷ p₀) × 293,15 ÷ (273,15 + t) ; μ = 1,204 ÷ 66 400 ; ν = μ ÷ ρ',
@@ -9379,9 +10187,14 @@ window.HVAC = window.HVAC || {};
       ['Duto flexível', 'com o dado do fabricante: a perda por metro informada ; sem ele: a do atrito com ε = ' + epsFlex + ' mm ; nos dois casos, × PDCF = 1 + 0,58 · Kc · e^(−0,00496 · D)',
         'Kc: compressão em % (vazio = 0, todo esticado); D em mm. ' + FA.flex + '. ' + FA.fab],
       ['ΔP de atrito', 'perda por metro × comprimento', 'Sem envelhecimento e sem fator de ida e volta'],
-      ['ΔP das singularidades', 'Σ (C × quantidade) × pv do trecho', FA.sing],
+    ].concat(curvas ? [
+      ['Coeficiente das curvas', 'C = C\'o(90°) × Kθ × KRe, conforme a fórmula de cada peça ; H/W = H ÷ W, com W = lado no plano da curva ; Re = ρ · V · Dh ÷ μ ; ' +
+        'interpolação linear em H/W, Re e V (fora da tabela, o valor da borda) ; raio e ângulo só nos valores tabelados',
+        M.curvas.FONTE + ', seção 3 (p. 10 a 15). Oval pelas peças retangulares e flexível pela 3-1: premissas do app - CONFERIR. O C digitado tem prioridade']
+    ] : []).concat([
+      ['ΔP das conexões', 'Σ (C × quantidade) × pv do trecho', FA.sing],
       ['ΔP dos componentes', 'o ΔP informado ; com a vazão de catálogo: ΔP × (Q ÷ Q cat)²', 'Dado de catálogo, informado pelo projetista'],
-      ['ΔP do trecho e acumulado', 'trecho = atrito + singularidades + componentes ; acumulado = soma dos trechos, do ventilador até o trecho', FA.total],
+      ['ΔP do trecho e acumulado', 'trecho = atrito + conexões + componentes ; acumulado = soma dos trechos, do ventilador até o trecho', FA.total],
       ['Boca crítica, excesso e desbalanceamento', 'em cada lado: crítica = boca de maior acumulado ; excesso = crítico − acumulado da boca ; desbalanceamento = (maior − menor) ÷ maior',
         FA.balanceamento + '. A definição do desbalanceamento é do app. Com empate, vale a primeira boca na ordem da tabela'],
       ['Ventilador', 'vazão = soma dos trechos de insuflamento que saem dele × (1 + vazamento ÷ 100) ; pressão total = crítico do insuflamento + crítico do retorno + efeito do sistema + filtro saturado ; ' +
@@ -9395,7 +10208,7 @@ window.HVAC = window.HVAC || {};
         'F em L/(s·m²); P em Pa: a pressão estática de trabalho, para a qual o app adota a classe de pressão dos dutos. ' + FA.cl + '. ' + FA.semFlex],
       ['Situação e avisos', 'REVISAR: velocidade real acima do máximo da classe de pressão ; avisos, que não mudam a situação: perda por metro fora da faixa, ruído, razão de aspecto, duto flexível, ' +
         'peça de tabela, desbalanceamento, classe de pressão e Reynolds abaixo de ' + n(M.dutos.RE_AVISO, 0), F_SITUACAO]
-    ]);
+    ]));
     return tabela('leitura metodo', [
       { t: 'Etapa', v: function (l) { return '<b>' + esc(l[0]) + '</b>'; } },
       { t: 'Equação', v: function (l) { return '<span class="f">' + esc(l[1]).replace(/\^(\d+,\d+)/g, '<sup>$1</sup>') + '</span>'; } },   // R5: o expoente sai elevado na folha
@@ -9460,20 +10273,27 @@ window.HVAC = window.HVAC || {};
   }
   function tabSingularidades(r) {
     var L = r.singularidades.filter(function (o) { return o.trecho !== ''; });
-    if (!L.length) { return '<p class="nota">Nenhuma singularidade lançada.</p>'; }
+    if (!L.length) { return '<p class="nota">Nenhuma conexão lançada.</p>'; }
     function trecho(o) { return o.orfa ? null : r.trechos[o.i]; }
     return tabela('leitura', [
       { t: 'Trecho', v: function (o) { return '<b>' + esc(o.trecho) + '</b>' + (o.orfa ? ' (órfã: fora da conta)' : ''); } },
       { t: 'Descrição', v: function (o) { return esc(o.descricao || '—'); } },
-      { t: 'Peça', v: function (o) { var d = o.peca ? TA.derivacao(o.peca) : null; return o.origemC === 'tabela' ? esc(o.peca + (d && d.descricao ? ' · ' + d.descricao : '')) : (o.origemC === 'informado' ? 'C digitado' : '—'); } },
-      { t: 'Lado da<br>peça', v: function (o) { return o.origemC === 'tabela' ? (o.ladoPeca === 'ramal' ? 'ramal' : 'passagem direta') : '—'; } },
+      { t: 'Peça', v: function (o) {
+        var d = o.peca ? TA.derivacao(o.peca) : null, cr = o.calcCurva, t = trecho(o);
+        if (o.curva && o.origemC === 'tabela' && cr) {
+          return esc(M.curvas.rotulo(o.curva) + ' · ' + n(cr.angulo, 0) + '°' + (o.curva.raio ? ' · ' + M.curvas.rotuloRaio(TA, o.curva, cr.raio) : '') +
+            (t && (t.forma === 'retangular' || t.forma === 'oval') ? ' · curva na ' + (o.ladoCurva === 'altura' ? 'altura' : 'largura') : ''));
+        }
+        return o.origemC === 'tabela' ? esc(o.peca + (d && d.descricao ? ' · ' + d.descricao : '')) : (o.origemC === 'informado' ? 'C digitado' : '—');
+      } },
+      { t: 'Lado da<br>peça', v: function (o) { return o.origemC === 'tabela' && !o.curva ? (o.ladoPeca === 'ramal' ? 'ramal' : 'passagem direta') : '—'; } },
       { t: 'C<br>unitário', num: true, v: function (o) { return n(o.c, 3); } },
       { t: 'Qtd.', num: true, v: function (o) { return n(o.qtd, 0); } },
       { t: 'C<br>total', num: true, v: function (o) { return n(o.cTotal, 3); } },
       { t: 'pv do trecho<br>Pa', num: true, v: function (o) { var t = trecho(o); return n(t ? t.pv : null, 2); } },
       { t: 'ΔP<br>Pa', num: true, v: function (o) { return n(o.dp, 2); } },
       { t: 'Fonte do C', v: function (o) { return o.origemC === 'tabela' ? comSelo(o.fonte) : (o.origemC === 'informado' ? 'Informado pelo projetista ' + seloF('informado') : '—'); } }
-    ], L) + '<p class="nota">ΔP da singularidade = C × quantidade × pressão de velocidade do trecho em que ela foi lançada, com a velocidade real da seção.</p>';
+    ], L) + '<p class="nota">ΔP da conexão = C × quantidade × pressão de velocidade do trecho em que ela foi lançada, com a velocidade real da seção.</p>';
   }
   function tabComponentes(r) {
     var L = r.componentes.filter(function (o) { return o.trecho !== ''; });
@@ -9565,7 +10385,7 @@ window.HVAC = window.HVAC || {};
     (RD.redes || []).forEach(function (r) { if (r.contagem.trechos === 0) { vazias.push(idRede(r)); } });
     return h2('Método e equações dos dutos') +
       '<p class="nota">Rede em árvore a partir do ventilador, com o insuflamento e o retorno em trechos próprios. Dimensionamento pelo método da perda de carga constante, em baixa pressão; ' +
-        'atrito por Darcy-Weisbach com o fator de Colebrook, no circular equivalente; singularidades pelo coeficiente C; componentes pelo dado de catálogo. Perdas em pressão total. ' + X.NOTA_ARRED + '</p>' + tabMetodo(comAlgumEquip(E, R)) +
+        'atrito por Darcy-Weisbach com o fator de Colebrook, no circular equivalente; conexões pelo coeficiente C; componentes pelo dado de catálogo. Perdas em pressão total. ' + X.NOTA_ARRED + '</p>' + tabMetodo(comAlgumEquip(E, R), comAlgumaCurva(E, R)) +
       h2('Premissas, método e critérios do ar') + tabPremissas(E, R) +
       lista.map(function (x, j) {
         var r = x.r, ok = X.validoAr(r), suf = varias ? ' · rede ' + idRede(r) : '';
@@ -9574,7 +10394,7 @@ window.HVAC = window.HVAC || {};
             X.ladosAr(r).map(function (ld) { return X.plural(ld.bocas, 'boca', 'bocas') + ' de ' + NOME_LADO[ld.nome]; }).join(' e ') + '.</p>' + tabRede(x, RD) +
           h2('Trechos dos dutos' + suf) + '<h3>Vazão, seção e escoamento</h3>' + X.tabTrechosArA(r, true) + '<h3>Perda de carga e verificações dos dutos</h3>' + X.tabTrechosArB(r, ok, true) +
             '<p class="nota">' + X.NOTA_TRECHOS_AR + ' ' + X.NOTA_ARRED + '</p>' + notaFlexiveis(r) +
-          h2('Singularidades e componentes' + suf) + '<h3>Singularidades</h3>' + tabSingularidades(r) + '<h3>Componentes</h3>' + tabComponentes(r) +
+          h2('Conexões e componentes' + suf) + '<h3>Conexões</h3>' + tabSingularidades(r) + '<h3>Componentes</h3>' + tabComponentes(r) +
           (ok ? h2('Ventilador e bocas críticas' + suf) + secVentilador(r) +
                 h2('Balanceamento dos dutos' + suf) + '<p class="nota">Excesso = ΔP da boca crítica do lado − ΔP acumulado da boca: é o que o registro de cada boca tem de dissipar. ' + esc(FA.balanceamento) + '.</p>' +
                   X.ladosBalanceamentoAr(r, x.i, cri, true) +
@@ -10118,7 +10938,7 @@ window.HVAC = window.HVAC || {};
 
   // dutos de ar: padrões "em uso" e limites de digitação, tirados do catálogo de campos
   var GRUPOS_AR = [['arPremissas', 'Ar dos dutos'], ['arMetodo', 'Método'], ['arCriterios', 'Critérios'], ['arRede', 'Rede'], ['arTrecho', 'Trecho'],
-                   ['arSingularidade', 'Singularidade'], ['arComponente', 'Componente'], ['unidade', 'Unidade']];
+                   ['arSingularidade', 'Conexão de duto'], ['arComponente', 'Componente'], ['unidade', 'Unidade']];
   var FONTE_LIMITE = 'Limite de digitação: premissa do app (não é limite de norma)';
   function linhasPadroesAr() {
     var r = [];
@@ -10189,7 +11009,9 @@ window.HVAC = window.HVAC || {};
           cols: [col('tipo', 'Tipo'), col('uniao', 'União'), nc('DN_maior_mm', 'DN maior mm'), nc('DN_menor_mm', 'DN menor mm'),
                  nc('K_1_2', 'K a 1,2 m/s'), nc('K_2_4', 'K a 2,4 m/s'), nc('K_3_6', 'K a 3,6 m/s'), nc('K', 'K adotado (o maior)')] }   // D31 (R5)
       ] },
-    { id: 'ref-criterios', n: 5, titulo: 'Critérios', frase: 'Velocidades máximas, velocidades econômicas e os valores padrão do app.',
+    { id: 'ref-criterios', n: 5, titulo: 'Critérios', frase: 'Velocidades máximas, velocidades econômicas e os valores padrão do app. ' +
+      'Silva Telles (Tubulações Industriais: Cálculo, 9ª ed., Tab. 2.1, p. 13, PDF 28) dá faixas mais baixas: água em instalações industriais, 2 a 3 m/s; sucção de bombas, 1 a 1,5 m/s; ' +
+      'e manda escolher o diâmetro no limite inferior da faixa. Valem as da NBR 16401-1:2024, Tabela 3.',
       tabs: [
         { chave: 'erosao', titulo: 'Velocidade máxima por erosão (NBR 16401-1, Tabela 4)', fonte: fonteDoCsv,
           cols: [nc('horas_ano', 'Horas por ano'), nc('v_max_m_s', 'v máx. m/s')] },
@@ -10453,7 +11275,7 @@ window.HVAC = window.HVAC || {};
       }
       if (k === 'calorSensivelW' && v !== vAntes && o.origemArquivo !== '') { o.origemArquivo = ''; o.origemItem = ''; o.origemData = ''; }
     }
-    // dutos de ar: o ID do trecho que muda de nome leva junto o montante, as singularidades e os componentes da rede dele
+    // dutos de ar: o ID do trecho que muda de nome leva junto o montante, as conexões e os componentes da rede dele
     if (ps[1] === 'ar' && ps[2] === 'redes' && ps.length === 7) {
       var rd = P.ar.redes[ps[3]];
       if (rd && ps[4] === 'trechos' && k === 'id' && typeof vAntes === 'string') {
@@ -10467,6 +11289,20 @@ window.HVAC = window.HVAC || {};
       }
       // sem peça da tabela, o lado da peça não vale nada
       if (rd && ps[4] === 'singularidades' && k === 'peca' && o.peca === '') { o.ladoPeca = ''; }
+      // v0.9.0: curva sem lado da peça; peça que não é curva sem ângulo, raio e lado que curva; raio fora da lista da curva nova volta ao em uso
+      if (rd && ps[4] === 'singularidades' && k === 'peca') {
+        var cv = M.curvas.peca(o.peca);
+        if (cv) {
+          o.ladoPeca = '';
+          if (typeof o.raio === 'number' && !M.curvas.raios(H.dados.tab.ar, cv).some(function (r) { return Math.abs(r - o.raio) < 1e-9; })) { o.raio = null; }
+          if (o.angulo === 45 && M.curvas.angulos(cv, typeof o.raio === 'number' ? o.raio : cv.raioPadrao).indexOf(45) < 0) { o.angulo = null; }
+        } else { o.angulo = null; o.raio = null; o.ladoCurva = ''; }
+      }
+      // raio de canto interno vivo (3-5, r/W 0,5) só a 90°
+      if (rd && ps[4] === 'singularidades' && k === 'raio' && o.angulo === 45) {
+        var cr = M.curvas.peca(o.peca);
+        if (cr && M.curvas.angulos(cr, o.raio === null ? cr.raioPadrao : o.raio).indexOf(45) < 0) { o.angulo = null; }
+      }
     }
   }
 
@@ -10654,7 +11490,7 @@ window.HVAC = window.HVAC || {};
     'rede-del': function () {
       var x = redeAtual();
       if (!x) { return; }
-      if (x.e.trechos.length && !window.confirm('Excluir a rede de ar ' + (x.e.id || '(sem ID)') + ', com ' + plural(x.e.trechos.length, 'trecho', 'trechos') + ', as singularidades e os componentes dela?')) { return; }
+      if (x.e.trechos.length && !window.confirm('Excluir a rede de ar ' + (x.e.id || '(sem ID)') + ', com ' + plural(x.e.trechos.length, 'trecho', 'trechos') + ', as conexões e os componentes dela?')) { return; }
       mudar(function (ag, P) { P.ar.redes.splice(x.i, 1); U.rede = Math.max(0, Math.min(x.i, P.ar.redes.length - 1)); });
     },
     // troca a dimensão dos trechos pela sugerida pelo motor (decisão P5: com confirmação)
@@ -10666,7 +11502,7 @@ window.HVAC = window.HVAC || {};
       mudar(function () { x.r.trechos.forEach(function (t, i) { if (t.sugestao && !X.sugestaoIgual(t)) { aplicarSugestao(x.e.trechos[i], t); } }); });
     },
 
-    // ---------------- dutos de ar: trechos, singularidades e componentes da rede escolhida
+    // ---------------- dutos de ar: trechos, conexões e componentes da rede escolhida
     'duto-aplicar': function (el) {
       var x = redeAtual(), i = indice(el), t = x ? x.r.trechos[i] : null;
       if (!t || !t.sugestao || X.sugestaoIgual(t)) { return; }
@@ -10710,7 +11546,7 @@ window.HVAC = window.HVAC || {};
       var unico = k !== '' && outros === 0, ns = unico ? doTrecho(null, rd.singularidades, k).length : 0, nc = unico ? doTrecho(null, rd.componentes, k).length : 0;
       if (unico) { rd.trechos.forEach(function (y) { if (chave(y.montante) === k) { filhos++; } }); }
       if (ns + nc + filhos > 0) {
-        var msg = 'Excluir o trecho ' + t.id + '?' + (ns + nc ? ' Vão junto ' + plural(ns, 'singularidade', 'singularidades') + ' e ' + plural(nc, 'componente', 'componentes') + '.' : '') +
+        var msg = 'Excluir o trecho ' + t.id + '?' + (ns + nc ? ' Vão junto ' + plural(ns, 'conexão', 'conexões') + ' e ' + plural(nc, 'componente', 'componentes') + '.' : '') +
           (filhos ? ' ' + plural(filhos, 'trecho fica', 'trechos ficam') + ' com o montante apontando para um trecho que não existe.' : '');
         if (!window.confirm(msg)) { return; }
       }
@@ -10736,12 +11572,12 @@ window.HVAC = window.HVAC || {};
       if (!x) { return; }
       return mudar(function () {
         x.e.singularidades.push(M.formato.linhaNova('arSingularidade', { trecho: x.e.trechos[i].id }));
-        U.singAberta = x.e.singularidades.length - 1;   // celular: a singularidade nova já aparece aberta
+        U.singAberta = x.e.singularidades.length - 1;   // celular: a conexão nova já aparece aberta
         return X.id('projeto.ar.redes.' + x.i + '.singularidades.' + (x.e.singularidades.length - 1) + '.descricao');
       });
     },
     'sing-del': function (el) { var x = redeAtual(), j = indice(el); if (x) { U.singAberta = -1; mudar(function () { x.e.singularidades.splice(j, 1); }); } },
-    // celular: tocar na linha-resumo abre a singularidade (e fecha a que estava aberta); tocar de novo fecha (estado da tela)
+    // celular: tocar na linha-resumo abre a conexão (e fecha a que estava aberta); tocar de novo fecha (estado da tela)
     'sing-abrir': function (el) { var j = indice(el); U.singAberta = U.singAberta === j ? -1 : j; },
     'comp-novo': function (el) {
       var x = redeAtual(), i = indice(el);
@@ -10784,7 +11620,7 @@ window.HVAC = window.HVAC || {};
     chave: 'hvac.redes.v1',
     paletaDica: 'Digite um comando ou o ID de um trecho',
     // sens: trecho escolhido na sensibilidade de DN (Resultados); rede e duto: rede de ar e trecho de ar escolhidos; modulo: o que Resultados mostra;
-    // cxAberta e singAberta: conexão e singularidade abertas no celular (índice na lista do projeto; -1 = nenhuma)
+    // cxAberta e singAberta: conexão da água e conexão do duto abertas no celular (índice na lista do projeto; -1 = nenhuma)
     estado: { amb: 0, aberto: { ident: true, fluido: true, arPrem: true, arMet: true }, sens: '', rede: 0, duto: 0, modulo: 'agua', cxAberta: -1, singAberta: -1 },
     rotas: {
       inicio: { tela: T.inicio },
