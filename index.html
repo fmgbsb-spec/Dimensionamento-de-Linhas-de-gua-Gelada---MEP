@@ -848,7 +848,7 @@ window.HVAC = window.HVAC || {};
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.9.1';
+  H.versao = '0.9.2';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -9453,10 +9453,10 @@ window.HVAC = window.HVAC || {};
     var ok = X.valido(R), c = R.contagem;
     // app só de dutos: sempre os dutos, sem o seletor do módulo
     if (!X.soAgua && (U.modulo === 'ar' || X.soDutos) && X.resultadosAr) {
-      return '<div class="rede">' + C.cabeca(X.passo('resultados'), 'Resultados', 'Dutos de ar: ventilador' + (X.soDutos ? ' e equipamento' : '') + ', bocas críticas, trechos, balanceamento, dimensão sugerida, vazamento e avisos. Os valores do ventilador abrem a conta, com fórmula, valores e fonte.') +
+      return '<div class="rede">' + C.cabeca(X.passo('resultados'), 'Resultados', 'Dutos de ar: ventilador' + (X.soDutos ? ' e equipamento' : '') + ', bocas críticas, trechos, balanceamento, dimensão sugerida e vazamento. Os valores do ventilador abrem a conta, com fórmula, valores e fonte.') +
         (X.soDutos ? '' : seletorModulo(U)) + X.resultadosAr(E, U, R) + '</div>';
     }
-    return '<div class="rede">' + C.cabeca(X.passo('resultados'), 'Resultados', 'Água gelada: bomba' + (R.bomba.existente ? ', bomba existente' : '') + ', circuito crítico, trechos, balanceamento, menor DN e avisos. Os valores da bomba e do balanceamento abrem a conta, com fórmula, valores e fonte.') +
+    return '<div class="rede">' + C.cabeca(X.passo('resultados'), 'Resultados', 'Água gelada: bomba' + (R.bomba.existente ? ', bomba existente' : '') + ', circuito crítico, trechos, balanceamento e menor DN. Os valores da bomba e do balanceamento abrem a conta, com fórmula, valores e fonte.') +
       (X.soAgua ? '' : seletorModulo(U)) +
       C.aprender('A bomba vence o caminho de maior perda de carga, da bomba até um terminal e de volta: o circuito crítico. Os outros terminais recebem pressão de sobra (excesso), que a válvula de balanceamento de cada um dissipa.') +
       (ok ? cartaoBomba(R) + cartaoBombaExistente(R) + cartaoCritico(R) : cartaoFalta(R, false)) +
@@ -9466,7 +9466,6 @@ window.HVAC = window.HVAC || {};
       (ok ? '<div class="cartao" data-g="balanceamento"><h2>Balanceamento</h2><p class="fraco" style="margin-bottom:10px">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' +
         tabTerminais(R, false) + notaKvAjuste(R, false) + notaAutoridade(R, false) + '</div>' : '') +
       (c.trechos && R.premissas.ok ? cartaoMenor(R, U) : '') +
-      '<div class="cartao" data-g="avisos"><h2>Avisos</h2>' + listaAvisos(R) + '</div>' +
       '<div class="acoes"><a class="botao prim" href="#/memorial">Abrir o memorial</a><a class="botao" href="#/rede">Voltar à rede</a></div></div>';
   };
 })(window.HVAC);
@@ -9614,7 +9613,6 @@ window.HVAC = window.HVAC || {};
       { t: 'Excesso<br>Pa', num: true, v: function (t) { return ok && t.boca ? n(t.excesso, 2) : '—'; } },
       { t: 'Razão de<br>aspecto', num: true, v: function (t) { return M.secao.circular(t.forma) ? '—' : n(t.aspecto, 2); } },
       { t: 'Superfície<br>m²', num: true, v: function (t) { return n(t.superficie, 2); } },
-      { t: 'Avisos', num: true, v: function (t) { return (t.avisos || []).length ? String(t.avisos.length) : '—'; } },
       { t: 'Situação', v: function (t) { var ld = r.lados[t.lado]; return X.seloSituacaoAr(t) + (ok && t.boca && ld && ld.iCritica === t.i ? ' <span class="selo calc">crítica</span>' : ''); } }
     ], comId(r));
   }
@@ -9766,7 +9764,6 @@ window.HVAC = window.HVAC || {};
       (ok ? cartaoBalanceamento(r, ri, cri) : '') +
       (c.trechos ? cartaoSugestao(r, ri, met) : '') +
       (ok && c.trechos ? cartaoVazamento(r, ri, cri) : '') +
-      '<div class="cartao" data-g="avisos-ar"><h2>Avisos</h2>' + listaAvisosAr(r) + '</div>' +
       '<div class="acoes"><a class="botao prim" href="#/dutos">Voltar aos dutos de ar</a><a class="botao" href="#/memorial">Abrir o memorial</a></div>';
   };
 })(window.HVAC);
@@ -10399,27 +10396,11 @@ window.HVAC = window.HVAC || {};
                 h2('Balanceamento dos dutos' + suf) + '<p class="nota">Excesso = ΔP da boca crítica do lado − ΔP acumulado da boca: é o que o registro de cada boca tem de dissipar. ' + esc(FA.balanceamento) + '.</p>' +
                   X.ladosBalanceamentoAr(r, x.i, cri, true) +
                 h2('Vazamento, superfície e classe de vazamento' + suf) + secVazamento(r, cri)
-              : h2('Ventilador, bocas críticas, balanceamento e vazamento' + suf) + faltaRede(r)) +
-          h2('Avisos dos dutos' + suf) + X.listaAvisosAr(r);
+              : h2('Ventilador, bocas críticas, balanceamento e vazamento' + suf) + faltaRede(r));
       }).join('') +
       (vazias.length && lista.length ? '<p class="nota">' + (vazias.length === 1 ? 'A rede de ar ' + esc(vazias[0]) + ' não tem trechos e fica' : 'As redes de ar ' + esc(vazias.join(', ')) + ' não têm trechos e ficam') + ' fora deste memorial.</p>' : '');
   }
-  // fontes dos dutos para a lista de referências, na ordem em que entram na conta
-  function fontes(E, R) {
-    var lista = redes(E, R), L = [FA.rho, 'Pressão pela altitude: ' + FA.altitude, FA.mu, FA.geo, FA.vReal, FA.atrito];
-    if (lista.some(function (x) { return x.r.trechos.some(function (t) { return !t.semId && t.forma === 'flexivel'; }); })) { L.push(FA.flex, FA.fab); }
-    L.push(FA.sing, FA.total, FA.balanceamento, FA.metodo, FA.ventQ, FA.ventP);
-    if (lista.some(function (x) { return numero(x.r.ventilador.pEstatica); })) { L.push('Pressão estática do ventilador: ' + FA.estatica); }
-    if (comAlgumEquip(E, R)) { L.push('Equipamento existente: ' + P_EQUIP); }
-    L.push(FA.cl);
-    if (lista.some(function (x) { return X.temVazamentoLadosAr(x.r); })) { L.push(FA.notaC, FA.ensaio); }
-    L.push(FA.semFlex, 'Umidade absoluta do recinto: ' + FA.w, 'Calor específico do ar úmido. ' + FA.cp);
-    dados(E, R).forEach(function (d) { if (!d.alterado && d.selo !== 'informado' && d.fonte !== 'Padrão do app' && d.fonte !== 'Premissa do app') { L.push(d.fonte); } });
-    tabelas(E, R).forEach(function (d) { L.push(d.fonte); });
-    return L;
-  }
-
-  X.memAr = { redes: redes, motivoRede: motivoRede, dados: dados, tabelas: tabelas, emitir: emitir, secoes: secoes, fontes: fontes };
+  X.memAr = { redes: redes, motivoRede: motivoRede, dados: dados, tabelas: tabelas, emitir: emitir, secoes: secoes };
 })(window.HVAC);
 
 </script>
@@ -10750,23 +10731,6 @@ window.HVAC = window.HVAC || {};
         (EX.avisos.length ? '<ul class="lista-avisos">' + EX.avisos.map(function (a) { return '<li class="revisar"><b>' + (a.tipo === 'vazaoBomba' ? 'Vazão' : 'Altura') + ':</b> ' + esc(a.texto) + '</li>'; }).join('') + '</ul>' : '') : '') +
       '<p class="nota"><b>Premissas e limites da comparação</b></p><ul class="lista-avisos">' + L.join('') + '</ul></div>';
   }
-  // fontes citadas na folha, sem repetição, na ordem em que entram na conta
-  function referencias(E, R, mod) {
-    var L = [], visto = Object.create(null);
-    // a fórmula das reduções traz o β de cada conexão: na lista ela entra uma vez só
-    function poe(fonte) { var k = String(fonte || '').replace(/, β = [\d,]+/, '').trim(); if (k && !visto[k]) { visto[k] = true; L.push(k); } }
-    if (mod.agua) {
-      [X.F_ATRITO, 'Regime de escoamento e fator de atrito laminar: ' + F_RE, X.F_NBR_1228, 'Perda por metro com o tubo novo: ' + X.F_TUBO_NOVO, 'Velocidade por erosão (critério do app): ' + F_EROSAO, 'Acréscimo por envelhecimento: ' + X.F_ENVELHECIMENTO, X.F_AUTORIDADE, X.F_RELACAO].forEach(poe);
-      if (X.valido(R) && R.premissas.controle === 'variavel' && R.terminais.some(function (x) { return x.autoridade !== null; })) { poe('Autoridade com bomba de velocidade variável: ' + X.F_AUT_VARIAVEL); }
-      dadosDoProjeto(E).forEach(function (d) { if (!d.alterado && d.selo !== 'informado' && d.fonte !== 'Padrão do app') { poe(d.fonte); } });
-      dadosDasTabelas(E, R).forEach(function (d) { poe(d.fonte); });
-      // bomba existente (AG14): a fonte da pressão equivalente e a da viscosidade
-      if (R.bomba.existente && R.bomba.existente.h !== null) { poe('Pressão equivalente da bomba existente: ' + X.F_PRESSAO_BE); }
-      if (R.bomba.existente && R.bomba.existente.viscoso) { poe('Efeito da viscosidade na bomba (o app não corrige): ASHRAE HVAC Systems and Equipment 2016 (SI), cap. 13, p. 13.24 (PDF 282) e Fig. 43'); }
-    }
-    if (mod.ar) { X.memAr.fontes(E, R).forEach(poe); }   // as dos dutos, depois das da água
-    return '<ol class="refs-f">' + L.map(function (x) { return '<li>' + esc(x) + ' ' + seloDe(x) + '</li>'; }).join('') + '</ol>';
-  }
   // cadastro de unidades (fancoil, built-in, self) e onde cada uma é usada
   function tabUnidades(P) {
     var uso = X.usoUnidades(P), L = [];
@@ -10832,20 +10796,17 @@ window.HVAC = window.HVAC || {};
         h2('Equipamentos') + tabEquipamentos(R) +
         (ok ? h2('Bomba e circuito crítico') + secaoBomba(R) +
               h2('Balanceamento') + '<p class="nota">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' + X.tabTerminais(R, true) + X.notaKvAjuste(R, true) + X.notaAutoridade(R, true)
-            : h2('Bomba, circuito crítico e balanceamento') + X.cartaoFalta(R, true)) +
-        h2('Avisos') + X.listaAvisos(R) : '') +
+            : h2('Bomba, circuito crítico e balanceamento') + X.cartaoFalta(R, true)) : '') +
       (mod.ar ?
         (duas ? '<div class="parte-f quebra" data-g="parte-b">Parte B · Dutos de ar</div>' : '') +
         X.memAr.secoes(E, R, h2) : '') +
-      h2('Referências') + '<p class="nota">Fontes dos valores e dos métodos que entram nesta conta. CONFERIR: valor sem documento-fonte conferido. Premissa: escolha declarada.</p>' +
-        referencias(E, R, { agua: agua, ar: mod.ar }) +
       '</article>';
   }
 
   // ------------------------------------------------------------ a tela
   T.memorial = function (E, U, R) {
     return '<div class="nao-imprime">' + C.cabeca(X.passo('memorial'), 'Memorial', 'O que ver antes de emitir e a folha para imprimir, em paisagem: identificação, unidades, ' +
-        (X.soDutos ? '' : 'água gelada (método, premissas, trechos, bomba e balanceamento)' + (X.soAgua ? ' e referências.' : ', ')) + (X.soAgua ? '' : 'dutos de ar (método, premissas, trechos, ventilador, balanceamento e vazamento) e referências.')) +
+        (X.soDutos ? '' : 'água gelada (método, premissas, trechos, bomba e balanceamento)' + (X.soAgua ? '.' : ' e ')) + (X.soAgua ? '' : 'dutos de ar (método, premissas, trechos, ventilador, balanceamento e vazamento).')) +
       '<div class="acoes" style="margin-bottom:16px"><button class="botao prim" data-acao="pdf">Gerar PDF</button><button class="botao" data-acao="salvar">Salvar arquivo do projeto</button>' +
         '<span class="fraco">No diálogo de impressão, escolha "Salvar como PDF". A folha já sai em A4 deitado.</span></div>' +
       cartaoEmitir(E, R) + '</div>' + folha(E, R);
