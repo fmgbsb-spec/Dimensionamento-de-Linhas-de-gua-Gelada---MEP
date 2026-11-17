@@ -848,7 +848,7 @@ window.HVAC = window.HVAC || {};
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.9.3';
+  H.versao = '0.9.4';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -9640,7 +9640,10 @@ window.HVAC = window.HVAC || {};
           { t: 'Excesso ÷<br>crítico', num: true, v: function (t) { return numero(t.excesso) && ld.dpCritico > 0 ? n(t.excesso / ld.dpCritico * 100, 1) + ' %' : '—'; } },
           { t: 'Observação', v: function (t) { return ld.iCritica === t.i ? '<span class="selo calc">crítica</span>' : ''; } }
         ], bocas) +
-        (numero(ld.desbalanceamento) ? '<p class="' + (folha ? 'nota' : 'msg-tela ' + (acima ? 'alerta' : 'bom')) + '">Desbalanceamento do ' + ld.nome + ': ' +
+        // v0.9.4: na folha, só o resultado e a fonte
+        (numero(ld.desbalanceamento) && folha ? '<p class="nota">Desbalanceamento do ' + ld.nome + ': ' + num('ar.desb.' + ld.nome, n(ld.desbalanceamento * 100, 1), '') + ' % (máximo ' +
+          f.campo(cri.desbalanceamentoMax, 0) + ' %; ' + esc(X.F_AR.balanceamento) + ')</p>' : '') +
+        (numero(ld.desbalanceamento) && !folha ? '<p class="' + (folha ? 'nota' : 'msg-tela ' + (acima ? 'alerta' : 'bom')) + '">Desbalanceamento do ' + ld.nome + ': ' +
           num('ar.desb.' + ld.nome, n(ld.desbalanceamento * 100, 1), folha ? '' : 'v.' + ri + '.desbalanceamento.' + ld.nome) + ' % ((maior − menor) ÷ maior, definição do app), ' + (acima ? 'acima do' : 'dentro do') + ' máximo em uso de ' +
           f.campo(cri.desbalanceamentoMax, 0) + ' %.' + (acima ? ' Vale rever as dimensões dos ramais de menor perda; a situação dos trechos não muda.' : '') + '</p>' : '') + '</div>';
     }).join('');
@@ -9692,17 +9695,17 @@ window.HVAC = window.HVAC || {};
     var VL = r.vazamentoLados || {}, L, POS = { insuflamento: ' (a jusante)', retorno: ' (a montante)' };
     if (!temVazamentoLados(r)) { return ''; }
     L = ['insuflamento', 'retorno'].map(function (nome) { return { nome: nome, s: nome === 'insuflamento' ? 'Ins' : 'Ret', x: VL[nome] }; });
-    return '<h3' + (folha ? '' : ' class="sub-t"') + '>Especificação por lado do ventilador</h3>' +
+    return '<h3' + (folha ? '' : ' class="sub-t"') + '>Especificação por lado do ventilador' + (folha ? ' (NBR 16401-1, p. 27, l. 48)' : '') + '</h3>' +
       X.tabelaLeitura('leitura', [
         { t: 'Lado', v: function (l) { return NOME_LADO[l.nome] + POS[l.nome]; } },
         { t: 'Superfície dos dutos rígidos<br>m²', num: true, v: function (l) { return num('ar.supCl' + l.s, n(l.x.superficieCl, 2)); } },
         { t: 'Classe de vazamento', num: true, v: function () { return 'CL ' + n(r.cl, 2); } },
         { t: 'Vazamento admissível a ' + n(cri.classePressao, 0) + ' Pa<br>L/s', num: true, v: function (l) { return num('ar.qVaz' + l.s, n(l.x.qVazamento * 1000, 2)); } }
       ], L, '<tr class="total"><td>Rede</td><td class="num">' + n(r.superficieCl, 2) + '</td><td class="num">CL ' + n(r.cl, 2) + '</td><td class="num">' + n(r.ventilador.qVazamento * 1000, 2) + '</td></tr>') +
-      '<p class="' + (folha ? 'nota' : 'fraco') + '">A classe é a da rede, a mesma nos dois lados. O vazamento admissível de cada lado é CL · A · P<sup>0,65</sup> ÷ 1 000, com a superfície rígida do lado. ' +
+      (folha ? '' : '<p class="fraco">A classe é a da rede, a mesma nos dois lados. O vazamento admissível de cada lado é CL · A · P<sup>0,65</sup> ÷ 1 000, com a superfície rígida do lado. ' +
         (folha ? esc(X.F_AR.notaC) : X.seloFonte(X.F_AR.notaC)) + '</p>' +
       '<p class="' + (folha ? 'nota' : 'fraco') + '">Os valores por lado são o limite na pressão de ' + n(cri.classePressao, 0) + ' Pa, para toda a superfície rígida do lado; não são o vazamento em operação. ' +
-        'Em ensaio de parte dos dutos, ou em outra pressão, o limite é CL · A ensaiada · (P de ensaio)<sup>0,65</sup> ÷ 1 000. ' + (folha ? esc(X.F_AR.ensaio) : X.seloFonte(X.F_AR.ensaio)) + '</p>';
+        'Em ensaio de parte dos dutos, ou em outra pressão, o limite é CL · A ensaiada · (P de ensaio)<sup>0,65</sup> ÷ 1 000. ' + (folha ? esc(X.F_AR.ensaio) : X.seloFonte(X.F_AR.ensaio)) + '</p>');
   }
   function cartaoVazamento(r, ri, cri) {
     var V = r.ventilador, k = 'v.' + ri + '.', ua = r.unidadeAtendida, cls = TA.classe(cri.classePressao);
@@ -10178,36 +10181,36 @@ window.HVAC = window.HVAC || {};
     var flex = TA.material(M.dutos.MATERIAL_FLEXIVEL), epsFlex = flex ? n(flex.eps, 1) : '—';
     var L = [
       ['Ar no duto', 'p ÷ p₀ = (1 − 2,25577 · 10⁻⁵ · z)^5,2559 ; ρ = 1,2 × (p ÷ p₀) × 293,15 ÷ (273,15 + t) ; μ = 1,204 ÷ 66 400 ; ν = μ ÷ ρ',
-        'z em m, t em °C, ρ em kg/m³ e μ em Pa·s. ' + FA.padrao + '; a correção por gás perfeito é cálculo do app. Altitude: ' + FA.altitude + '. Viscosidade: ' + FA.mu],
+        'NBR 16401-1, p. 3, l. 7; ASHRAE Fundamentals 2021, p. 1.1, l. 84 e p. 21.6, Eq. 21'],
       ['Vazão da boca', 'a informada, ou Q = qs × 3 600 ÷ (ρ₂₀ · cp · ΔT), com ρ₂₀ = 1,2 × (p ÷ p₀) e cp = 1 006 + 1 860 · w',
-        'qs em W, cp em J/(kg·°C), ΔT em °C e Q em m³/h; w é a umidade absoluta do recinto. ' + FA.cp],
-      ['Vazão dos troncos', 'a informada, ou a soma dos trechos a jusante', 'Sem fator de diversificação (volume constante)'],
+        'qs em W, cp em J/(kg·°C), ΔT em °C, Q em m³/h; ASHRAE Fundamentals 2021, p. 1.10, l. 37 e 41'],
+      ['Vazão dos troncos', 'a informada, ou a soma dos trechos a jusante', 'volume constante'],
       ['Geometria e circular equivalente', 'circular: A = π · D² ÷ 4 e De = D ; retangular a × b: A = a · b, P = 2 · (a + b) e De = 1,30 · (a · b)^0,625 ÷ (a + b)^0,25 ; ' +
         'oval A × a: AR = π · a² ÷ 4 + a · (A − a), P = π · a + 2 · (A − a) e De = 1,55 · AR^0,625 ÷ P^0,25', FA.geo],
-      ['Velocidade e pressão de velocidade', 'V = Q ÷ 3 600 ÷ A ; pv = ρ · V² ÷ 2', FA.vReal],
+      ['Velocidade e pressão de velocidade', 'V = Q ÷ 3 600 ÷ A ; pv = ρ · V² ÷ 2', 'ASHRAE Fundamentals 2021, p. 21.9'],
       ['Atrito, no circular equivalente', 'Ve = Q ÷ 3 600 ÷ (π · De² ÷ 4) ; Re = ρ · Ve · De ÷ μ ; f por Colebrook (laminar: f = 64 ÷ Re) ; perda por metro = f ÷ De × ρ · Ve² ÷ 2', FA.atrito],
       ['Duto flexível', 'com o dado do fabricante: a perda por metro informada ; sem ele: a do atrito com ε = ' + epsFlex + ' mm ; nos dois casos, × PDCF = 1 + 0,58 · Kc · e^(−0,00496 · D)',
-        'Kc: compressão em % (vazio = 0, todo esticado); D em mm. ' + FA.flex + '. ' + FA.fab],
-      ['ΔP de atrito', 'perda por metro × comprimento', 'Sem envelhecimento e sem fator de ida e volta'],
+        'Kc em %; D em mm; ' + FA.flex + '; NBR 16401-1, p. 24, l. 21'],
+      ['ΔP de atrito', 'perda por metro × comprimento', ''],
     ].concat(curvas ? [
       ['Coeficiente das curvas', 'C = C\'o(90°) × Kθ × KRe, conforme a fórmula de cada peça ; H/W = H ÷ W, com W = lado no plano da curva ; Re = ρ · V · Dh ÷ μ ; ' +
         'interpolação linear em H/W, Re e V (fora da tabela, o valor da borda) ; raio e ângulo só nos valores tabelados',
-        'ASHRAE Fitting Loss Coefficients, p. 10, l. 4. Oval pelas peças retangulares e flexível pela 3-1: premissas do app - CONFERIR. O C digitado tem prioridade']
+        'ASHRAE Fitting Loss Coefficients, p. 10, l. 4']
     ] : []).concat([
       ['ΔP das conexões', 'Σ (C × quantidade) × pv do trecho', FA.sing],
-      ['ΔP dos componentes', 'o ΔP informado ; com a vazão de catálogo: ΔP × (Q ÷ Q cat)²', 'Dado de catálogo, informado pelo projetista'],
-      ['ΔP do trecho e acumulado', 'trecho = atrito + conexões + componentes ; acumulado = soma dos trechos, do ventilador até o trecho', FA.total],
+      ['ΔP dos componentes', 'o ΔP informado ; com a vazão de catálogo: ΔP × (Q ÷ Q cat)²', 'Catálogo'],
+      ['ΔP do trecho e acumulado', 'trecho = atrito + conexões + componentes ; acumulado = soma dos trechos, do ventilador até o trecho', X.fonteCurta(FA.total)],
       ['Boca crítica, excesso e desbalanceamento', 'em cada lado: crítica = boca de maior acumulado ; excesso = crítico − acumulado da boca ; desbalanceamento = (maior − menor) ÷ maior',
-        FA.balanceamento + '. A definição do desbalanceamento é do app. Com empate, vale a primeira boca na ordem da tabela'],
+        FA.balanceamento],
       ['Ventilador', 'vazão = soma dos trechos de insuflamento que saem dele × (1 + vazamento ÷ 100) ; pressão total = crítico do insuflamento + crítico do retorno + efeito do sistema + filtro saturado ; ' +
-        'pressão estática = pressão total − ρ · V descarga² ÷ 2', 'Vazão: ' + FA.ventQ + '. Pressão, sem margem: ' + FA.ventP + '. Estática: ' + FA.estatica]
+        'pressão estática = pressão total − ρ · V descarga² ÷ 2', 'NBR 16401-1, p. 26, l. 35 e Eq. 4; p. 24, l. 9; ASHRAE Fundamentals 2021, Eq. 15 e 17']
     ].concat(equip ? [
       ['Equipamento existente', 'diferença da vazão = (vazão do ventilador − vazão nominal) ÷ vazão nominal ; disponível no ar da rede = disponível do catálogo × ρ da rede ÷ ρ do catálogo ; ' +
         'folga = disponível no ar da rede − pressão exigida ; ' +
-        'pressão exigida = a estática, com a velocidade na descarga, ou a total, sem ela', P_EQUIP]
+        'pressão exigida = a estática, com a velocidade na descarga, ou a total, sem ela', 'ASHRAE Systems and Equipment 2016, p. 21.6; NBR 16401-1, p. 38, l. 16']
     ] : []).concat([
       ['Superfície e classe de vazamento', 'superfície = Σ perímetro × comprimento ; F = vazamento ÷ superfície dos dutos rígidos ; CL = 1 000 · F ÷ P^0,65',
-        'F em L/(s·m²); P em Pa: a pressão estática de trabalho, para a qual o app adota a classe de pressão dos dutos. ' + FA.cl + '. ' + FA.semFlex],
+        'F em L/(s·m²); P em Pa; NBR 16401-1, p. 28, l. 19, 22, 24 e 27'],
       ['Situação e avisos', 'REVISAR: velocidade real acima do máximo da classe de pressão ; avisos, que não mudam a situação: perda por metro fora da faixa, ruído, razão de aspecto, duto flexível, ' +
         'peça de tabela, desbalanceamento, classe de pressão e Reynolds abaixo de ' + n(M.dutos.RE_AVISO, 0), F_SITUACAO]
     ]));
@@ -10227,12 +10230,12 @@ window.HVAC = window.HVAC || {};
     // valores que o app calcula ou tira das tabelas a partir dos dados do grupo (v já vem em HTML)
     function calc(g, r, v, fonte, daTabela) { G[g].push({ g: g, r: r, v: v, o: daTabela ? 'tabela do app' : 'calculado', fonte: fonte, selo: fonte ? TAB.selo(fonte) : '' }); }
     calc('Ar dos dutos', 'Pressão atmosférica', esc(n(ar.p / 1000, 3) + ' kPa'), FA.altitude);
-    calc('Ar dos dutos', 'Massa específica do ar no duto', num('ar.rho', n(ar.rho, 4)) + ' kg/m³', ar.origemRho === 'manual' ? '' : FA.rho);
+    calc('Ar dos dutos', 'Massa específica do ar no duto', num('ar.rho', n(ar.rho, 4)) + ' kg/m³', ar.origemRho === 'manual' ? '' : 'NBR 16401-1, p. 3, l. 7; ' + FA.altitude);
     calc('Ar dos dutos', 'Viscosidade dinâmica', esc(n(ar.mu * 1e5, 4) + ' × 10⁻⁵ Pa·s'), ar.origemMu === 'manual' ? '' : FA.mu);
     calc('Ar dos dutos', 'Viscosidade cinemática', esc(n(ar.nu * 1e6, 3) + ' × 10⁻⁶ m²/s'), '');
     calc('Ar dos dutos', 'Umidade absoluta do recinto', esc(n(ar.w, 5) + ' kg/kg'), FA.w);
     calc('Ar dos dutos', 'Calor específico do ar úmido', num('ar.cp', n(ar.cp, 1)) + ' J/(kg·°C)', FA.cp);
-    calc('Ar dos dutos', 'Massa específica para a vazão pelo calor sensível', esc(n(ar.rhoVazao, 4) + ' kg/m³'), FA.padrao + ', corrigido só pela altitude. ' + FA.difusores);
+    calc('Ar dos dutos', 'Massa específica para a vazão pelo calor sensível', esc(n(ar.rhoVazao, 4) + ' kg/m³'), 'NBR 16401-1, p. 3, l. 7; ' + FA.altitude);
     if (cls) { calc('Critérios dos dutos', 'Velocidade máxima da classe de pressão', esc(numero(cls.vMax) ? n(cls.vMax, 1) + ' m/s' : 'sem limite na tabela'), cls.fonte, true); }
     if (ru) {
       calc('Critérios dos dutos', 'Velocidade máxima pelo ruído (só aviso)', esc('retangular ' + (numero(ru.retangular) ? n(ru.retangular, 1) + ' m/s' : 'sem limite') + ' · circular ' +
@@ -10244,8 +10247,25 @@ window.HVAC = window.HVAC || {};
       { t: 'Dado', v: function (l) { return esc(l.r); } },
       { t: 'Valor em uso', num: true, v: function (l) { return '<b>' + l.v + '</b>'; } },
       { t: 'Origem', v: function (l) { return esc(l.o); } },
-      { t: 'Fonte', v: function (l) { return esc(l.fonte || '—') + (l.selo && l.fonte ? ' ' + seloF(l.selo) : ''); } }
-    ], L);
+      { t: 'Fonte', v: function (l) { return esc(X.fonteCurta(l.fonte) || '—'); } }
+    ], L) + tabPremissasCalculo(E, R);
+  }
+  // v0.9.4: premissas do cálculo que vinham dentro das fontes e das notas, só as que valem neste projeto
+  function tabPremissasCalculo(E, R) {
+    var lista = redes(E, R), L = [];
+    function tem(fn) { return lista.some(function (x) { return fn(x.r); }); }
+    if (tem(function (r) { return r.singularidades.some(function (o) { return !o.orfa && /Trecho de retorno: junção convergente/.test(o.fonte || ''); }); })) {
+      L.push(['Junção do retorno com o coeficiente da derivação de insuflamento (aproximação)', 'ASHRAE Fundamentals 2021, p. 21.22']);
+    }
+    if (tem(function (r) { return numero(r.ventilador.pTotal); })) {
+      L.push(['Pressão total sem serpentina, filtro limpo e perdas internas do equipamento, salvo se lançados como componente', '—']);
+    }
+    if (tem(function (r) { return numero(r.cl); })) { L.push(['P da classe de vazamento = classe de pressão dos dutos', '—']); }
+    if (tem(function (r) { return r.trechos.some(function (t) { return !t.semId && t.forma === 'oval' && t.v !== null; }); })) { L.push(['Ruído do duto oval pela coluna do retangular', '—']); }
+    return L.length ? '<h3>Premissas do cálculo</h3>' + tabela('leitura', [
+      { t: 'Premissa', v: function (l) { return esc(l[0]); } },
+      { t: 'Fonte', v: function (l) { return esc(l[1]); } }
+    ], L) : '';
   }
 
   // ------------------------------------------------------------ a folha: seções de cada rede de ar
@@ -10270,7 +10290,7 @@ window.HVAC = window.HVAC || {};
       { t: 'Valor em uso', num: true, v: function (l) { return '<b>' + esc(l.v) + '</b>'; } },
       { t: 'Origem', v: function (l) { return esc(l.o); } },
       // o texto do catálogo explica o campo; o valor é do projetista
-      { t: 'Fonte', v: function (l) { return l.o === 'informado' ? esc(l.fonte || 'Dado do projeto') + ' ' + seloF('informado') : (l.o === 'vazio' ? esc(l.fonte || '—') : comSelo(l.fonte)); } }
+      { t: 'Fonte', v: function (l) { return esc(X.fonteCurta(l.fonte || (l.o === 'informado' ? 'Dado do projeto' : '')) || '—'); } }
     ], L);
   }
   function tabSingularidades(r) {
@@ -10294,8 +10314,8 @@ window.HVAC = window.HVAC || {};
       { t: 'C<br>total', num: true, v: function (o) { return n(o.cTotal, 3); } },
       { t: 'pv do trecho<br>Pa', num: true, v: function (o) { var t = trecho(o); return n(t ? t.pv : null, 2); } },
       { t: 'ΔP<br>Pa', num: true, v: function (o) { return n(o.dp, 2); } },
-      { t: 'Fonte do C', v: function (o) { return o.origemC === 'tabela' ? comSelo(o.fonte) : (o.origemC === 'informado' ? 'Informado pelo projetista ' + seloF('informado') : '—'); } }
-    ], L) + '<p class="nota">ΔP da conexão = C × quantidade × pressão de velocidade do trecho em que ela foi lançada, com a velocidade real da seção.</p>';
+      { t: 'Fonte do C', v: function (o) { return o.origemC === 'tabela' ? esc(X.fonteCurta(o.fonte) || '—') : (o.origemC === 'informado' ? 'Informado' : '—'); } }
+    ], L);
   }
   function tabComponentes(r) {
     var L = r.componentes.filter(function (o) { return o.trecho !== ''; });
@@ -10308,7 +10328,7 @@ window.HVAC = window.HVAC || {};
       { t: 'Vazão de catálogo<br>m³/h', num: true, v: function (o) { return n(o.qCat, 1); } },
       { t: 'Vazão do trecho<br>m³/h', num: true, v: function (o) { var t = o.orfa ? null : r.trechos[o.i]; return n(t ? t.qM3h : null, 1); } },
       { t: 'ΔP adotado<br>Pa', num: true, v: function (o) { return n(o.dp, 2); } }
-    ], L) + '<p class="nota">O ΔP e a vazão de catálogo são informados pelo projetista, a partir do catálogo de cada componente. Com a vazão de catálogo, o ΔP é corrigido pelo quadrado da razão de vazões.</p>';
+    ], L);
   }
   function m3h(v) { return numero(v) ? n(v * 3600, 1) : '—'; }
   function secVentilador(r) {
@@ -10317,7 +10337,7 @@ window.HVAC = window.HVAC || {};
     if (numero(V.q)) { passos = passos.concat(X.passosVentQ(r)); }
     if (numero(V.pTotal)) { passos = passos.concat(X.passosVentP(r)); }
     if (numero(V.pEstatica)) {
-      passos.push(p('Pressão de velocidade na descarga', 'pv = ρ · V² ÷ 2', n(r.ar.rho, 4) + ' × ' + n(V.vDescarga, 2) + '² ÷ 2', n(V.pvDescarga, 2) + ' Pa', 'Velocidade na descarga: dado da rede, do catálogo do equipamento'));
+      passos.push(p('Pressão de velocidade na descarga', 'pv = ρ · V² ÷ 2', n(r.ar.rho, 4) + ' × ' + n(V.vDescarga, 2) + '² ÷ 2', n(V.pvDescarga, 2) + ' Pa', 'Catálogo'));
       passos.push(p('Pressão estática do ventilador', 'pressão total − pressão de velocidade na descarga', n(V.pTotal, 2) + ' − ' + n(V.pvDescarga, 2), n(V.pEstatica, 2) + ' Pa', FA.estatica));
     }
     return '<table class="resumo-f"><tbody><tr>' +
@@ -10330,10 +10350,7 @@ window.HVAC = window.HVAC || {};
       '</tr></tbody></table>' +
       (V.motivoQ ? '<p class="alerta-f">Vazão do ventilador sem valor: ' + esc(semPonto(V.motivoQ)) + '.</p>' : '') +
       (V.motivoP ? '<p class="alerta-f">Pressão total sem valor: ' + esc(semPonto(V.motivoP)) + '.</p>' : '') +
-      (passos.length ? C.tabPassos(passos) : '') +
-      '<p class="nota">Vazão do ventilador: a dos dutos mais o vazamento admissível; os trechos são dimensionados sem o vazamento. Pressão: perdas em pressão total, sem margem (a folga, se houver, é do projetista). ' +
-        (numero(V.pEstatica) ? '' : 'A pressão estática só é mostrada com a velocidade na descarga do ventilador informada na rede. ') + X.NOTA_ARRED + '</p>' +
-      '<p class="nota" data-g="nota-ptotal">' + X.NOTA_PTOTAL_AR + '</p>' +
+      (passos.length ? C.tabPassos(passos.map(function (x) { var o = {}, k; for (k in x) { o[k] = x[k]; } o.fonte = X.fonteCurta(x.fonte); return o; })) : '') +
       (X.temEquipAr(r) ? '<h3>Equipamento existente</h3>' + X.comparaEquipAr(r, true) : '') +
       X.ladosAr(r).map(function (ld) {
         var s = ld.nome === 'insuflamento' ? 'Ins' : 'Ret';
@@ -10353,19 +10370,16 @@ window.HVAC = window.HVAC || {};
         cel('Classe de pressão dos dutos', esc(n(cri.classePressao, 0)) + ' Pa') +
       '</tr></tbody></table>' +
       (numero(r.cl) ? C.tabPassos([
-        p('Vazamento admissível', 'vazão dos dutos × percentual ÷ 3,6', n(V.qBase * 3600, 1) + ' × ' + n(V.vazamentoPct, 1) + ' ÷ 100 ÷ 3,6', n(V.qVazamento * 1000, 2) + ' L/s', FA.tabela2),
-        p('Superfície dos dutos rígidos', 'soma de perímetro × comprimento, sem os flexíveis', '', n(r.superficieCl, 2) + ' m²', FA.semFlex),
+        p('Vazamento admissível', 'vazão dos dutos × percentual ÷ 3,6', n(V.qBase * 3600, 1) + ' × ' + n(V.vazamentoPct, 1) + ' ÷ 100 ÷ 3,6', n(V.qVazamento * 1000, 2) + ' L/s', X.fonteCurta(FA.tabela2)),
+        p('Superfície dos dutos rígidos', 'soma de perímetro × comprimento, sem os flexíveis', '', n(r.superficieCl, 2) + ' m²', 'NBR 16401-1, p. 28, l. 19'),
         p('Fator de vazamento', 'F = vazamento ÷ superfície', n(V.qVazamento * 1000, 2) + ' ÷ ' + n(r.superficieCl, 2), n(V.qVazamento * 1000 / r.superficieCl, 4) + ' L/(s·m²)', ''),
         p('Classe de vazamento', 'CL = 1 000 · F ÷ P^0,65', '1 000 × ' + n(V.qVazamento * 1000 / r.superficieCl, 4) + ' ÷ ' + n(cri.classePressao, 0) + '^0,65', n(r.cl, 2),
-          'P: pressão estática de trabalho, em Pa; o app adota a classe de pressão dos dutos. ' + FA.cl)])
+          'NBR 16401-1, p. 28, l. 22, 24 e 27')])
         : '<p class="nota">A classe de vazamento CL pede o vazamento admissível da rede e ao menos um trecho de duto rígido com comprimento.</p>') +
       X.vazamentoLadosAr(r, cri, true) +
-      '<p class="nota">Superfície de todos os trechos, para o quantitativo; a da classe de vazamento não conta os flexíveis. Classe de pressão em uso: ' + esc(n(cri.classePressao, 0)) + ' Pa' +
-        (cls ? ' (' + esc(cls.operacao || cls.tipo || '') + (numero(cls.vMax) ? '; velocidade máxima de ' + esc(n(cls.vMax, 1)) + ' m/s' : '') + ')' : '') + '. ' + X.NOTA_ARRED + '</p>' +
       (ua.id !== '' && numero(r.calorBocas) ? '<h3>Calor sensível das bocas e da unidade</h3><p class="nota">Bocas do insuflamento: ' + num('ar.calorBocas', n(r.calorBocas, 0)) + ' W' +
         (ua.existe && numero(ua.calorSensivelW) ? ' · unidade ' + esc(ua.id) + ': ' + esc(n(ua.calorSensivelW, 0)) + ' W · diferença de ' + (ua.diferenca >= 0 ? '+' : '−') + esc(n(Math.abs(ua.diferenca) * 100, 2)) + ' %'
-          : ' · unidade ' + esc(ua.id) + (ua.existe ? ': cadastrada sem o calor sensível' : ': não está no cadastro')) +
-        '. A boca lançada por vazão entra pelo calor equivalente, com o mesmo ΔT de insuflamento.</p>' : '');
+          : ' · unidade ' + esc(ua.id) + (ua.existe ? ': cadastrada sem o calor sensível' : ': não está no cadastro')) + '</p>' : '');
   }
   function faltaRede(r) {
     return '<div class="falta-f" data-g="falta-ar"><p class="alerta-f">Enquanto houver erro de dados, o ventilador, as bocas críticas, o balanceamento e o vazamento não valem e não são mostrados.</p><ul class="lista-falta">' +
@@ -10376,30 +10390,27 @@ window.HVAC = window.HVAC || {};
     var L = [];
     r.trechos.forEach(function (t) {
       if (t.semId || t.forma !== 'flexivel' || !numero(t.paMBase) || !numero(t.pdcf) || !numero(t.paM)) { return; }
-      L.push('<b>' + esc(t.id) + '</b>: ' + (t.estimativa ? 'perda estimada com ε de 0,9 mm, ' : 'perda informada pelo fabricante, ') +
-        esc(n(t.paMBase, 2)) + ' Pa/m × PDCF de ' + esc(n(t.pdcf, 3)) + ' = ' + esc(n(t.paM, 2)) + ' Pa/m' + (t.estimativa ? '' : ' (o ε e o f da tabela não entram na conta deste trecho)'));
+      L.push('<b>' + esc(t.id) + '</b>: ' + esc(n(t.paMBase, 2)) + ' Pa/m' + (t.estimativa ? '' : ' informada') + ' × PDCF de ' + esc(n(t.pdcf, 3)) + ' = ' + esc(n(t.paM, 2)) + ' Pa/m');
     });
-    return L.length ? '<p class="nota" data-g="nota-flexiveis">Dutos flexíveis. ' + L.join('; ') + '.</p>' : '';
+    return L.length ? '<p class="nota" data-g="nota-flexiveis">Dutos flexíveis: ' + L.join('; ') + '.</p>' : '';
   }
   // todas as seções dos dutos; h2(titulo, quebra) numera as seções da folha
   function secoes(E, R, h2) {
     var lista = redes(E, R), RD = R.dutos, cri = RD.criterios, varias = lista.length > 1, vazias = [];
     (RD.redes || []).forEach(function (r) { if (r.contagem.trechos === 0) { vazias.push(idRede(r)); } });
     return h2('Método e equações dos dutos') +
-      '<p class="nota">Rede em árvore a partir do ventilador, com o insuflamento e o retorno em trechos próprios. Dimensionamento pelo método da perda de carga constante, em baixa pressão; ' +
-        'atrito por Darcy-Weisbach com o fator de Colebrook, no circular equivalente; conexões pelo coeficiente C; componentes pelo dado de catálogo. Perdas em pressão total. ' + X.NOTA_ARRED + '</p>' + tabMetodo(comAlgumEquip(E, R), comAlgumaCurva(E, R)) +
+      '<p class="nota">Rede em árvore a partir do ventilador; perda de carga constante, baixa pressão; Darcy-Weisbach com Colebrook no circular equivalente; ' +
+        'conexões pelo coeficiente C; componentes pelo catálogo; perdas em pressão total.</p>' + tabMetodo(comAlgumEquip(E, R), comAlgumaCurva(E, R)) +
       h2('Premissas, método e critérios do ar') + tabPremissas(E, R) +
       lista.map(function (x, j) {
         var r = x.r, ok = X.validoAr(r), suf = varias ? ' · rede ' + idRede(r) : '';
         return h2('Rede ' + idRede(r) + ': dados da rede', j > 0) +   // da segunda rede em diante, em página nova
           '<p class="nota">' + (r.descricao ? esc(r.descricao) + ' · ' : '') + X.plural(r.contagem.trechos, 'trecho', 'trechos') + ', ' +
             X.ladosAr(r).map(function (ld) { return X.plural(ld.bocas, 'boca', 'bocas') + ' de ' + NOME_LADO[ld.nome]; }).join(' e ') + '.</p>' + tabRede(x, RD) +
-          h2('Trechos dos dutos' + suf) + '<h3>Vazão, seção e escoamento</h3>' + X.tabTrechosArA(r, true) + '<h3>Perda de carga e verificações dos dutos</h3>' + X.tabTrechosArB(r, ok, true) +
-            '<p class="nota">' + X.NOTA_TRECHOS_AR + ' ' + X.NOTA_ARRED + '</p>' + notaFlexiveis(r) +
+          h2('Trechos dos dutos' + suf) + '<h3>Vazão, seção e escoamento</h3>' + X.tabTrechosArA(r, true) + '<h3>Perda de carga e verificações dos dutos</h3>' + X.tabTrechosArB(r, ok, true) + notaFlexiveis(r) +
           h2('Conexões e componentes' + suf) + '<h3>Conexões</h3>' + tabSingularidades(r) + '<h3>Componentes</h3>' + tabComponentes(r) +
           (ok ? h2('Ventilador e bocas críticas' + suf) + secVentilador(r) +
-                h2('Balanceamento dos dutos' + suf) + '<p class="nota">Excesso = ΔP da boca crítica do lado − ΔP acumulado da boca: é o que o registro de cada boca tem de dissipar. ' + esc(FA.balanceamento) + '.</p>' +
-                  X.ladosBalanceamentoAr(r, x.i, cri, true) +
+                h2('Balanceamento dos dutos' + suf) + X.ladosBalanceamentoAr(r, x.i, cri, true) +
                 h2('Vazamento, superfície e classe de vazamento' + suf) + secVazamento(r, cri)
               : h2('Ventilador, bocas críticas, balanceamento e vazamento' + suf) + faltaRede(r));
       }).join('') +
@@ -10429,6 +10440,81 @@ window.HVAC = window.HVAC || {};
   var P_D26 = 'Premissa do app: a margem da bomba é suposta retirada na bomba, e não no balanceamento dos terminais';
 
   function n(v, casas) { return f.num(v, casas); }
+
+  // ------------------------------------------------------------ v0.9.4: fonte curta na folha ("Documento, p. X, l. Y")
+  // As telas e o "antes de emitir" seguem com o texto longo (o selo sai do texto da fonte: TAB.selo); só a folha encurta.
+  function fonteCurta(fonte) {
+    var s = String(fonte || '').trim(), m, i;
+    if (!s) { return ''; }
+    if (/^(Valor )?[Ii]nformado pelo projetista/.test(s)) { return 'Informado'; }
+    if (/^Dado do projeto/.test(s)) { return 'Dado do projeto'; }
+    if (/^Valor inicial/.test(s)) { return 'Premissa (valor inicial)'; }
+    if (/^Sem padrão: dado de projeto/.test(s)) { m = s.match(/valores de referência na (.*)$/); return 'Dado de projeto' + (m ? '; ' + m[1] : ''); }
+    if ((m = s.match(/^Opcional \(vazio = 0\): entra na pressão do ventilador \(([^)]*)\)/))) { return m[1]; }
+    if (/^Opcional/.test(s)) { return ''; }
+    if (/^Padrão do app$/.test(s)) { return 'Premissa de projeto'; }
+    if (/^Premissa de projeto: Brasília/.test(s)) { return 'ASHRAE Fundamentals 2025, estação 867150'; }
+    if ((m = s.match(/^Premissa do app: 20 °C, a temperatura do ar-padrão \((NBR[^)]*)\)/))) { return m[1]; }
+    if (/^Cálculo do app: ar-padrão/.test(s)) { return 'NBR 16401-1, p. 3, l. 7; ASHRAE Fundamentals 2021, p. 1.1, l. 84'; }
+    if (/^Premissa d[oe] (app|projeto)/.test(s)) { return 'Premissa de projeto'; }
+    s = s.replace(/^Derivada da entalpia do ar úmido: /, '').replace(/^Perdas em pressão total: /, '').replace(/\. A mesma conta do app de difusores.*$/, '')
+      .replace(/; a escolha da linha é premissa de projeto$/, '').replace(/, R-718 Saturated Liquid/, '').replace(/, citado em /, ', em ')
+      .replace(/ e texto(?=:|$)/, '').replace(/; valores de referência: /, '; ')
+      .replace(/\. Os trechos são dimensionados sem o vazamento$/, '').replace(/\. Sem margem: a folga, se houver, é do projetista$/, '')
+      .replace(/ \(coeficientes para [^)]*\)/, '').replace(/\. Trecho de retorno: junção.*$/, '');
+    i = s.indexOf(':');
+    if (i > 0 && /, p\. /.test(s.slice(0, i))) { s = s.slice(0, i); }   // "Documento, p. X: explicação" → "Documento, p. X"
+    return s.replace(/\s*-?\s*CONFERIR.*$/, '').replace(/\s+premissa$/, '').trim();
+  }
+  // fonte curta do K de uma conexão (dnmm: DN do trecho, para o n da borboleta no Crane)
+  function kCurta(fonte, dnmm) {
+    var s = String(fonte || ''), m, nn;
+    if ((m = s.match(/^Crane TP-410M, p\. 2-15, tê com redução, escoamento dividindo.*?G = ([\d,]+)\), q = Qramal ÷ Qtronco = ([\d,]+), β = Di ramal ÷ Di tronco = ([\d,]+)/))) {
+      return 'Crane TP-410M, p. 2-15, Eq. 2-37 (G = ' + m[1] + '; q = ' + m[2] + '; β = ' + m[3] + ')';
+    }
+    if ((m = s.match(/^Crane TP-410M, p\. 2-15, tê com redução, escoamento convergindo.*?C = ([\d,]+)\)/))) { return 'Crane TP-410M, p. 2-15, Eq. 2-35 (C = ' + m[1] + ')'; }
+    if ((m = s.match(/^Fórmula de contração brusca K = 0,5\(1−β²\) \(Crane TP-410M\), β = (\d+,\d+)/))) { return 'contração, K = 0,5(1 − β²), β = ' + m[1] + ' (Crane TP-410M)'; }
+    if ((m = s.match(/^Fórmula de expansão brusca K = \(1−β²\)² \(Borda-Carnot\), β = (\d+,\d+)/))) { return 'expansão, K = (1 − β²)², β = ' + m[1] + ' (Borda-Carnot)'; }
+    if ((m = s.match(/^(ASHRAE Fundamentals 2021, p\. 22\.7, l\. 14) \(Rahmeyer 2003a\)/))) { return m[1]; }
+    if (/^Crane TP-410M: .*K = n·fT/.test(s)) {
+      nn = (m = s.match(/\(n = (\d+)\)/)) ? m[1] : (/n = 45 até 200 mm; 35 de 250 a 350 mm; 25 acima/.test(s) && numero(dnmm) ? (dnmm <= 200 ? '45' : (dnmm <= 350 ? '35' : '25')) : '');
+      return 'Crane TP-410M, p. A-28 a A-30 (K = n·fT' + (nn ? ', n = ' + nn : '') + ')';
+    }
+    // o DN fora da tabela vai no fim, depois de encurtar (o ":" dele não pode cortar a fonte)
+    var fim = (m = s.match(/ — DN (\d+) mm (?:não tabelado|abaixo da tabela): valor de (\d+) mm adotado/)) ? ' (DN ' + m[1] + ': valor de ' + m[2] + ' mm)'
+      : ((m = s.match(/ — valor de (\d+) mm adotado \(conservador\)/)) ? ' (valor de ' + m[1] + ' mm)' : '');
+    s = s.replace(/ \((solda\/flange|rosca); Hydraulic Institute 1990\)/, '').replace(/ — .*$/, '').replace(/ \(Fitting Loss Coefficients of Turbulent Flow\).*$/, '');
+    return fonteCurta(s) + fim;
+  }
+  // premissas do cálculo que hoje vinham dentro das fontes e das notas: [texto, fonte], só as que valem neste projeto
+  function premissasCalculo(R) {
+    var L = [], ok = X.valido(R), txt = R.conexoes.filter(function (c) { return !c.semTrecho && !c.orfa; }).map(function (c) { return (c.fonte || '') + ' ' + (c.fonteVolta || ''); }).join(' ');
+    if (/Para 2\/3 < β < 1/.test(txt)) { L.push(['Tê de derivação com 2/3 < β < 1: H = 1', 'Crane TP-410M, p. 2-15']); }
+    if (/Com q entre 0,4 e 0,6/.test(txt)) { L.push(['Tê com q entre 0,4 e 0,6: limite de q = 0,4 na linha β² ≤ 0,35 e 0,6 na outra', 'Crane TP-410M, p. 2-15; Fig. 2-16, p. 2-16']); }
+    if (/adotado K = 0/.test(txt)) { L.push(['Tê convergindo com K calculado negativo: K = 0', 'Crane TP-410M, p. 2-15']); }
+    if (/K genérico em material não ensaiado/.test(txt)) { L.push(['Conexão de cobre: K genérico de conexão lisa', 'ASHRAE Fundamentals 2021, p. 3.8; NBR 16401-1, p. 33, l. 30']); }
+    if (/fT de aço comercial aplicado a tubo liso/.test(txt)) { L.push(['Válvula em tubo liso: fT do aço comercial', 'Crane TP-410M, p. A-28 a A-30']); }
+    if (R.equipamentos.some(function (e) { return !e.semTrecho && !e.orfa && e.kv !== null; })) { L.push(['Catálogo em Cv: Kv = 0,862 × Cv', 'ASHRAE Systems and Equipment 2016, p. 47.9']); }
+    if (ok && R.terminais.some(function (x) { return x.kvAjuste !== null; })) { L.push(['Kv de ajuste com SG = ρ ÷ 1 000', X.F_KV]); }
+    if (ok && R.terminais.length) { L.push(['Excesso dissipado no balanceamento do próprio terminal; margem da bomba fora do excesso e da autoridade', '—']); }
+    return L;
+  }
+  function tabPremissasCalculo(L) {
+    return L.length ? '<h3>Premissas do cálculo</h3>' + tabela('leitura', [
+      { t: 'Premissa', v: function (l) { return esc(l[0]); } },
+      { t: 'Fonte', v: function (l) { return esc(l[1]); } }
+    ], L) : '';
+  }
+  // passos da bomba com a fonte curta
+  function passosCurtos(L) {
+    return L.map(function (x) {
+      var s = String(x.fonte || ''), o = {}, k;
+      for (k in x) { o[k] = x[k]; }
+      o.fonte = /^(Com empate|Metros de coluna|m³\/s × kPa)/.test(s) ? '' : fonteCurta(s);
+      return o;
+    });
+  }
+  X.fonteCurta = fonteCurta;
   // módulos que fazem parte do projeto (M1): o que não tem nenhum trecho fica fora, sem erro
   function modulos(E, R) {
     var ar = X.soAgua ? [] : X.memAr.redes(E, R);   // app só de água gelada: sem dutos
@@ -10625,36 +10711,31 @@ window.HVAC = window.HVAC || {};
       { t: 'Dado', v: function (l) { return esc(l.r); } },
       { t: 'Valor em uso', num: true, v: function (l) { return '<b>' + esc(l.v) + '</b>'; } },
       { t: 'Origem', v: function (l) { return esc(l.o); } },
-      { t: 'Fonte', v: function (l) { return esc(l.fonte || '—') + (l.selo && l.fonte ? ' ' + seloF(l.selo) : ''); } }
-    ], linhasPremissas(E, R));
+      { t: 'Fonte', v: function (l) { return esc(fonteCurta(l.fonte) || '—'); } }
+    ], linhasPremissas(E, R)) + tabPremissasCalculo(premissasCalculo(R));
   }
   function tabMetodo() {
     var L = [
-      ['Vazão do terminal', 'Q = P × 3 600 ÷ (ρ · cp · ΔT), ou a vazão informada', 'P em kW, ρ em kg/m³, cp em kJ/(kg·°C), ΔT em °C e Q em m³/h; ΔT de projeto = T retorno − T alimentação'],
-      ['Vazão dos troncos', 'soma das vazões dos trechos a jusante × fator de diversificação do trecho', 'Rede em árvore: cada trecho tem um só trecho a montante. ' +
-        'Com vazão variável, a NBR 16401-1, p. 33, l. 20, pede aplicar um fator de diversificação nos troncos e na bomba; o fator 1 (padrão, e o do exemplo) não reduz a vazão e fica a favor da segurança'],
-      ['Velocidade', 'v = Q ÷ 3 600 ÷ A ; A = π · Di² ÷ 4 ; Di = De − 2 · e', 'Dimensões do tubo: ver as referências'],
+      ['Vazão do terminal', 'Q = P × 3 600 ÷ (ρ · cp · ΔT), ou a vazão informada', 'P em kW, ρ em kg/m³, cp em kJ/(kg·°C), ΔT em °C, Q em m³/h'],
+      ['Vazão dos troncos', 'soma das vazões dos trechos a jusante × fator de diversificação do trecho', 'NBR 16401-1, p. 33, l. 20'],
+      ['Velocidade', 'v = Q ÷ 3 600 ÷ A ; A = π · Di² ÷ 4 ; Di = De − 2 · e', ''],
       ['Reynolds e regime', 'Re = v · Di ÷ ν ; laminar abaixo de 2 000, transição de 2 000 a 10 000, turbulento acima', F_RE],
-      ['Fator de atrito', 'laminar: f = 64 ÷ Re ; de Re 2 000 em diante, Colebrook: 1 ÷ √f = −2 · log10(ε ÷ (3,7 · Di) + 2,51 ÷ (Re · √f)), por Newton (três passos, partida de Swamee-Jain)',
-        X.F_ATRITO + '; laminar: ' + F_RE],
-      ['Perda por metro, tubo novo', 'Δp ÷ L = f ÷ Di × ρ · v² ÷ 2', X.F_DARCY],
-      ['ΔP distribuído', 'perda por metro × (1 + envelhecimento) × comprimento × fator ida e volta ÷ 1 000', 'Acréscimo por envelhecimento: ' + X.F_ENVELHECIMENTO],
-      ['ΔP das conexões', '(ΣK da ida + ΣK da volta × (fator ida e volta − 1)) × ρ · v² ÷ 2 ÷ 1 000',
-        'Método K; a fonte do K de cada acessório está na tabela de conexões. Na volta, a redução conta como ampliação e a ampliação como redução; ' +
-        'o tê de derivação com redução (ramal de diâmetro menor que o tronco) sai do Crane TP-410M, p. 2-15: Eq. 2-37 na ida (dividindo) e Eq. 2-35 na volta (convergindo, K ≥ 0); ' +
-        'as demais conexões e o K informado repetem o K da ida'],
+      ['Fator de atrito', 'laminar: f = 64 ÷ Re ; de Re 2 000 em diante, Colebrook: 1 ÷ √f = −2 · log10(ε ÷ (3,7 · Di) + 2,51 ÷ (Re · √f))',
+        'ASHRAE Fundamentals 2021, p. 22.5, Eq. 4; p. 21.6; p. 3.7'],
+      ['Perda por metro, tubo novo', 'Δp ÷ L = f ÷ Di × ρ · v² ÷ 2', 'ASHRAE Fundamentals 2021, p. 22.5'],
+      ['ΔP distribuído', 'perda por metro × (1 + envelhecimento) × comprimento × fator ida e volta ÷ 1 000', 'HDR Design Guide (1981), em ASHRAE Fundamentals 2021, p. 22.23'],
+      ['ΔP das conexões', '(ΣK da ida + ΣK da volta × (fator ida e volta − 1)) × ρ · v² ÷ 2 ÷ 1 000', 'Método K (seção 5); volta: Crane TP-410M, p. 2-15, Eq. 2-35 e 2-37'],
       ['ΔP dos equipamentos', 'catálogo: ΔP cat ; catálogo corrigido: ΔP cat × (Q ÷ Q cat)² ; Kv: 100 × (Q ÷ Kv)² × ρ ÷ 1 000 ; altura estática (só em circuito aberto): ρ · g · h ÷ 1 000',
-        'Q em m³/h, Kv em m³/h para 1 bar (convenção do app) e ΔP em kPa; Kv: ' + X.F_KV + ', com SG = ρ ÷ 1 000; o equipamento existe uma vez no trecho'],
-      ['ξ equivalente da válvula', '2 × ΔP × 1 000 ÷ (ρ · v²) = 200 × (3 600 × A)² ÷ Kv²', 'Não entra na soma: compara a válvula com o K das conexões'],
-      ['Kv de ajuste do balanceamento', 'Q × √(100 × ρ ÷ 1 000 ÷ (ΔP aberta + excesso))', 'ASHRAE Systems and Equipment 2016, p. 47.9, l. 23; no circuito crítico, a válvula aberta'],
+        X.F_KV + ' (Kv; SG = ρ ÷ 1 000)'],
+      ['ξ equivalente da válvula', '2 × ΔP × 1 000 ÷ (ρ · v²) = 200 × (3 600 × A)² ÷ Kv²', 'informativo, fora da soma'],
+      ['Kv de ajuste do balanceamento', 'Q × √(100 × ρ ÷ 1 000 ÷ (ΔP aberta + excesso))', X.F_KV],
       ['ΔP do trecho e acumulado', 'trecho = distribuído + conexões + equipamentos ; acumulado = soma dos trechos, da bomba até o trecho', ''],
-      ['Circuito crítico e excesso', 'crítico = maior acumulado entre os terminais ; excesso = crítico − acumulado do terminal', 'Com empate, vale o primeiro terminal na ordem da tabela'],
+      ['Circuito crítico e excesso', 'crítico = maior acumulado entre os terminais ; excesso = crítico − acumulado do terminal', ''],
       ['Critérios de dimensionamento', 'até o DN limite: velocidade máxima ; acima dele: velocidade máxima por erosão e perda máxima por metro, com o tubo novo',
-        'Velocidade até 50 mm e perda por metro acima de 50 mm: ' + X.F_NBR_1228 + '. Os dados publicados de perda valem para o tubo novo: ' + X.F_TUBO_NOVO +
-        '. Velocidade por erosão acima do DN limite: critério do app, com os valores da ' + F_EROSAO],
-      ['Autoridade da válvula de controle', 'ΔP da válvula ÷ (ΔP do trecho terminal + excesso do terminal)', X.F_AUTORIDADE],
-      ['Bomba', 'ΔP de projeto = crítico × (1 + margem) ; H = ΔP de projeto × 1 000 ÷ (ρ · g) ; P hidráulica = Q ÷ 3 600 × ΔP de projeto ; P no eixo = P hidráulica ÷ rendimento da bomba ; P elétrica = P no eixo ÷ rendimento do motor',
-        'Relação de bombeamento = P elétrica ÷ energia térmica transportada. ' + X.F_RELACAO]
+        'NBR 16401-1, p. 33, l. 36; p. 33, l. 27; p. 32, l. 32; p. 33, l. 8'],
+      ['Autoridade da válvula de controle', 'ΔP da válvula ÷ (ΔP do trecho terminal + excesso do terminal)', 'ASHRAE Systems and Equipment 2016, p. 47.8 e p. 13.15'],
+      ['Bomba', 'ΔP de projeto = crítico × (1 + margem) ; H = ΔP de projeto × 1 000 ÷ (ρ · g) ; P hidráulica = Q ÷ 3 600 × ΔP de projeto ; P no eixo = P hidráulica ÷ rendimento da bomba ; P elétrica = P no eixo ÷ rendimento do motor ; ' +
+        'relação de bombeamento = P elétrica ÷ energia térmica transportada', 'NBR 16401-1, p. 33, l. 33']
     ];
     return tabela('leitura metodo', [
       { t: 'Etapa', v: function (l) { return '<b>' + esc(l[0]) + '</b>'; } },
@@ -10678,13 +10759,15 @@ window.HVAC = window.HVAC || {};
       { t: 'K<br>total', num: true, v: function (c) { return n(c.kTotal, 3); } },
       { t: 'ΔP por via<br>kPa', num: true, v: function (c) { return n(c.dp, 3); } },
       { t: 'Fonte do K', v: function (c) {
+        var ida = c.kManual !== null ? 'Informado' : (kCurta(c.fonte, c.dnmmTrecho) || '—'), volta;
         if (!c.orfa && voltaComPar(c, R)) {
-          return 'ida: ' + esc(c.fonte || '—') + (c.selo ? ' ' + seloF(c.selo) : '') + ' · volta (' + c.rotuloVolta + '): ' + esc(c.fonteVolta || '—') + (c.seloVolta ? ' ' + seloF(c.seloVolta) : '');
+          volta = kCurta(c.fonteVolta, c.dnmmTrecho) || '—';
+          if (/^Crane TP-410M, p\. 2-15, /.test(ida) && /^Crane TP-410M, p\. 2-15, /.test(volta)) { volta = volta.replace(/^Crane TP-410M, p\. 2-15, /, ''); }
+          return 'ida: ' + esc(ida) + '; volta: ' + esc(volta);
         }
-        return esc(c.fonte || '—') + (c.selo ? ' ' + seloF(c.selo) : '');
+        return esc(ida);
       } }
-    ], L) + '<p class="nota">As conexões são lançadas para uma via, e as colunas "K total" e "ΔP por via" são as da ida. No trecho com fator ida e volta 2 o app as repete na volta: a redução conta como ampliação e ' +
-      'a ampliação como redução e o tê de derivação com redução como tê convergindo, pela Eq. 2-35 do Crane TP-410M (coluna "K na volta"); as demais conexões e o K informado repetem o K da ida. Redução e ampliação entram no trecho cuja vazão passa pela peça, com o DN do tubo vizinho em "DN do outro lado".</p>';
+    ], L);
   }
   function tabEquipamentos(R) {
     var L = R.equipamentos.filter(function (e) { return !e.semTrecho; });
@@ -10703,11 +10786,10 @@ window.HVAC = window.HVAC || {};
       { t: 'Válvula de<br>balanceamento', v: function (e) { return e.valvulaBalanceamento ? 'sim' : 'não'; } },
       { t: 'ΔP adotado<br>kPa', num: true, v: function (e) { return e.dp === null ? esc(e.erroDp || '—') : n(e.dp, 3); } },
       { t: 'ξ equivalente', num: true, v: function (e) { return e.xi === null ? '—' : n(e.xi, 1); } }
-    ], L) + '<p class="nota">Os dados de catálogo, o Kv e a altura estática são informados pelo projetista, a partir do catálogo de cada equipamento. ' +
-      'Catálogo em Cv: Kv = 0,862 × Cv (ASHRAE Systems and Equipment 2016, p. 47.9).</p>';
+    ], L);
   }
   function secaoBomba(R) {
-    var b = R.bomba, dentro = b.relacao <= M.agua.LIMITE_REL;
+    var b = R.bomba;
     return '<table class="resumo-f"><tbody><tr>' +
         '<td><span>Vazão</span><b>' + X.numMarcado('bomba.q', n(b.q, 3)) + ' m³/h</b></td>' +
         '<td><span>Altura manométrica</span><b>' + X.numMarcado('bomba.h', n(b.h, 3)) + ' mca</b></td>' +
@@ -10715,9 +10797,7 @@ window.HVAC = window.HVAC || {};
         '<td><span>Terminal crítico</span><b>' + X.numMarcado('critico', b.terminalCritico) + '</b></td>' +
         '<td><span>Potência elétrica</span><b>' + X.numMarcado('bomba.pEl', n(b.pEl, 3)) + ' kW</b></td>' +
         '<td><span>Relação de bombeamento</span><b>' + X.numMarcado('bomba.relacao', n(b.relacao, 4)) + ' kW/kW</b></td>' +
-      '</tr></tbody></table>' + C.tabPassos(X.passosBomba(R)) +
-      (numero(b.relacao) ? '<p class="nota">Relação de bombeamento ' + (dentro ? 'dentro do' : 'acima do') + ' valor de ' + n(M.agua.LIMITE_REL, 2) + ' kW/kW, que a norma chama de desejável, porém nem sempre viável. ' +
-        'Altura em metros de coluna do fluido do projeto.</p>' : '') +
+      '</tr></tbody></table>' + C.tabPassos(passosCurtos(X.passosBomba(R))) +
       '<div class="junto"><h3>Circuito crítico</h3><p class="caminho" data-g="caminho">bomba → ' + esc(X.textoCaminho(R)) + '</p>' + X.tabCaminho(R) + '</div>' +   // junto: a tabela não se separa do total
       subsecaoBombaExistente(R);
   }
@@ -10725,14 +10805,14 @@ window.HVAC = window.HVAC || {};
   function subsecaoBombaExistente(R) {
     var EX = R.bomba.existente;
     if (!EX) { return ''; }
-    function prem(t) { return '<li>' + esc(t) + ' ' + seloF('premissa') + '</li>'; }
+    function prem(t) { return '<li>' + esc(t) + '</li>'; }
     var L = [];
     if (EX.q !== null) { L.push(prem('Tolerância da vazão de ' + n(EX.tol * 100, 1) + ' %: ' + CAT.bomba.tolVazaoBomba.fonte.replace(/^Premissa do app:\s*/, ''))); }
     if (EX.h !== null) { L.push(prem(X.P_BE_ALTURA)); }
     if (EX.viscoso) { L.push(prem(X.P_BE_VISCOSIDADE(EX.muMPas))); }
     L.push(prem(X.P_BE_LIMITES));
     return '<div class="junto" data-g="bomba-existente-folha"><h3>Bomba existente</h3>' + X.comparaBomba(R, true) +
-      (X.valido(R) ? C.tabPassos(X.passosBombaExistente(R)) +
+      (X.valido(R) ? C.tabPassos(passosCurtos(X.passosBombaExistente(R))) +
         (EX.avisos.length ? '<ul class="lista-avisos">' + EX.avisos.map(function (a) { return '<li class="revisar"><b>' + (a.tipo === 'vazaoBomba' ? 'Vazão' : 'Altura') + ':</b> ' + esc(a.texto) + '</li>'; }).join('') + '</ul>' : '') : '') +
       '<p class="nota"><b>Premissas e limites da comparação</b></p><ul class="lista-avisos">' + L.join('') + '</ul></div>';
   }
@@ -10747,9 +10827,7 @@ window.HVAC = window.HVAC || {};
       { t: 'Calor sensível<br>W', num: true, v: function (l) { return n(l.u.calorSensivelW, 0); } },
       { t: 'Origem', v: function (l) { return l.u.origemArquivo ? 'carga térmica: ' + esc(l.u.origemArquivo) + (l.u.origemItem ? ' · ' + esc(l.u.origemItem) : '') + (l.u.origemData ? ' · importado em ' + esc(l.u.origemData) : '') : 'digitada pelo projetista'; } },
       { t: 'Onde é usada', v: function (l) { return l.usos.length ? esc(l.usos.join('; ')) : 'não é usada'; } }
-    ], L) + '<p class="nota">' + (X.soDutos ? 'O calor sensível serve aos dutos de ar (conferência com as bocas do insuflamento); o calor total fica no cadastro para a água gelada, que não faz parte deste app.'
-      : (X.soAgua ? 'O calor total serve à água gelada; o calor sensível fica no cadastro para os dutos de ar, que não fazem parte deste app.'
-      : 'O calor total serve à água gelada (terminal sem carga digitada) e o calor sensível, aos dutos de ar (conferência com as bocas do insuflamento).')) + '</p>';
+    ], L);
   }
   function linhaAgua(E, R, mod) {
     var ok = X.valido(R), c = R.contagem;
@@ -10792,15 +10870,14 @@ window.HVAC = window.HVAC || {};
       (agua ?
         (duas ? '<div class="parte-f" data-g="parte-a">Parte A · Água gelada</div>' : '') +
         h2('Método e equações') +
-        '<p class="nota">Rede em árvore, com a alimentação e o retorno no mesmo trecho (fator ida e volta). Perda de carga por Darcy-Weisbach com o fator de atrito de Colebrook; conexões pelo método K; ' +
-          'equipamentos pelo dado de catálogo. Unidades do SI, com temperatura em °C. ' + X.NOTA_ARRED + '</p>' + tabMetodo() +
+        '<p class="nota">Rede em árvore; Darcy-Weisbach com Colebrook; conexões pelo método K; ' +
+          'equipamentos pelo catálogo.</p>' + tabMetodo() +
         h2('Premissas e dados em uso') + tabPremissas(E, R) +
-        h2('Trechos', true) + (c.trechos ? '<h3>Vazão, tubo e escoamento</h3>' + X.tabTrechosA(R, true) + '<h3>Perda de carga e verificações</h3>' + X.tabTrechosB(R, true) +
-          '<p class="nota">' + X.NOTA_TRECHOS + '</p>' : '<p class="nota">A rede não tem trechos.</p>') +
+        h2('Trechos', true) + (c.trechos ? '<h3>Vazão, tubo e escoamento</h3>' + X.tabTrechosA(R, true) + '<h3>Perda de carga e verificações</h3>' + X.tabTrechosB(R, true) : '<p class="nota">A rede não tem trechos.</p>') +
         h2('Conexões') + tabConexoes(R) +
         h2('Equipamentos') + tabEquipamentos(R) +
         (ok ? h2('Bomba e circuito crítico') + secaoBomba(R) +
-              h2('Balanceamento') + '<p class="nota">Excesso = ΔP do circuito crítico − ΔP acumulado do terminal: é o que o balanceamento de cada terminal tem de dissipar.</p>' + X.tabTerminais(R, true) + X.notaKvAjuste(R, true) + X.notaAutoridade(R, true)
+              h2('Balanceamento') + X.tabTerminais(R, true)
             : h2('Bomba, circuito crítico e balanceamento') + X.cartaoFalta(R, true)) : '') +
       (mod.ar ?
         (duas ? '<div class="parte-f quebra" data-g="parte-b">Parte B · Dutos de ar</div>' : '') +
