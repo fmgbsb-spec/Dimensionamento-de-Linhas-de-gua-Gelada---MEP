@@ -31,7 +31,7 @@
 <!-- App só de água gelada (sessão AG1): o mesmo código do index.html, com o js/interface/modo_agua.js depois do nucleo.js.
      Plataforma comum (_plataforma-hvac): tokens, base, componentes e folha do memorial. O build embute tudo no HTML único. -->
 <style>
-/* ==== plataforma v0.6.0: css/base.css ==== */
+/* ==== plataforma v0.6.1: css/base.css ==== */
 /* ---- importado: fontes.css ---- */
 /* Fontes embutidas (gerado por _plataforma-hvac\codigo\ferramentas\gera_fontes.py; não editar à mão).
    Arquivos woff2 do Google Fonts, subconjunto latin, sem alteração; letras fora dele usam a fonte seguinte da lista.
@@ -522,7 +522,7 @@ button.kpi-c:hover { border-color: var(--prim); }
 
 </style>
 <style>
-/* ==== plataforma v0.6.0: css/impressao.css ==== */
+/* ==== plataforma v0.6.1: css/impressao.css ==== */
 /* Plataforma HVAC: memorial em formato de folha e regras de impressão (o PDF sai pela impressão do navegador). */
 /* v0.5.0: a folha é papel e não flutua (sem sombra, só a borda); dentro dela ficam as fontes e os pesos da v0.4.1, para o PDF
    sair igual (a tela troca para IBM Plex; o memorial muda de fonte só numa etapa própria, com o Francisco) */
@@ -548,6 +548,8 @@ button.kpi-c:hover { border-color: var(--prim); }
 .folha table.passos-t td { overflow-wrap: anywhere; }
 .folha .nota { font-size: 12px; color: var(--folha-tinta2); margin-top: 8px; }
 .folha .f { font-family: "Cascadia Mono", Consolas, monospace; font-size: 11.5px; }
+/* v0.6.1 (Francisco, 2026-11-17): na folha não há retângulo colorido; o selo vira texto corrido, na tinta do papel */
+.folha .selo, .folha .selo-f { display: inline; background: none; border: 0; border-radius: 0; padding: 0; color: var(--folha-tinta); font: inherit; white-space: normal; }
 /* Tabelas largas cabem na folha */
 .folha table { width: 100%; font-size: 11.5px; }
 .folha th { white-space: normal; letter-spacing: 0; text-transform: none; font-size: 11px; }
@@ -558,14 +560,19 @@ button.kpi-c:hover { border-color: var(--prim); }
   .folha { padding: 20px 16px; }
 }
 
+/* v0.6.1 (Francisco, 2026-11-17): sem o cabeçalho e o rodapé do navegador (data, título, endereço da página). O navegador os
+   imprime na margem da página; com a margem zero não há onde pô-los, e a margem do papel passa a ser o recuo da folha, repetido
+   em cada página (box-decoration-break: clone). Cada tópico numerado começa numa folha nova (casca.js marca .topico-folha). */
+@page { margin: 0; }
 @media print {
   /* o papel é branco também na margem: sem isto, o tema escuro (color-scheme: dark na raiz) pinta a margem da página */
   :root[data-tema] { color-scheme: light; background: var(--folha-fundo); }
   body { background: var(--folha-fundo); padding: 0; }
   .topo, .faixa, .nao-imprime, .veu, .gaveta, .janela { display: none !important; }
   main { max-width: none; padding: 0; }
-  .folha { border: 0; box-shadow: none; max-width: none; padding: 0; }
+  .folha { border: 0; box-shadow: none; max-width: none; padding: 10mm; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
   .folha h2 { break-after: avoid; }
+  .folha h2.topico-folha { break-before: page; margin-top: 0; }
   .folha tr { break-inside: avoid; }
   /* celular (v0.4.0): o que a tela estreita acrescentou não vai ao papel, e a folha encolhida volta ao tamanho do papel */
   .cel-menu, .cel-passos, .cel-dica, .cel-cartoes, .cel-rolar { display: none !important; }
@@ -683,7 +690,8 @@ table.leitura tr.atual td { background: var(--sup2); }
 /* Memorial: folha em paisagem (A4 deitado). A largura da tela acompanha a do papel. */
 main:has(.folha.paisagem) { max-width: 1240px; }
 .folha.paisagem { max-width: 1123px; padding: 38px 40px; }
-@page { size: A4 landscape; margin: 11mm; }
+/* margem zero: sem cabeçalho e rodapé do navegador (plataforma 0.6.1); a margem de 11 mm é o recuo da folha, no @media print */
+@page { size: A4 landscape; margin: 0; }
 /* dentro da folha nada depende do tema: é o papel (cores claras fixas) */
 .folha a { color: inherit; }
 .folha h3 { font-size: 13px; margin: 14px 0 6px; color: var(--folha-tinta); }
@@ -703,7 +711,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 .folha table.metodo th:nth-child(2) { width: 47%; }
 .folha .sit { font-size: inherit; color: var(--folha-tinta); }
 .folha .sit.revisar, .folha .sit.dados { color: #8a2a1c; }
-.folha .selo { background: none; border: 1px solid #888; color: var(--folha-tinta); font-size: 9.5px; padding: 0 4px; }
+/* selo na folha: texto corrido, sem caixa (plataforma 0.6.1, impressao.css) */
 .selo-f { display: inline-block; font-size: 9.5px; font-weight: 700; border: 1px solid #888; border-radius: 4px; padding: 0 4px; color: #333; white-space: nowrap; }
 .selo-f.conferir { border-color: #8a2a1c; color: #8a2a1c; }
 .selo-f.premissa { border-color: #2c4a73; color: #2c4a73; }
@@ -761,7 +769,10 @@ main:has(.folha.paisagem) { max-width: 1240px; }
   /* a margem do papel branca no tema escuro vem de impressao.css da plataforma (v0.3.0) */
   .folha .junto { break-inside: avoid; }
   main:has(.folha.paisagem) { max-width: none; }
-  .folha.paisagem { max-width: none; padding: 0; }
+  .folha.paisagem { max-width: none; padding: 11mm; }
+  /* tópico numerado em folha nova (plataforma 0.6.1): o título de parte abre a folha e leva o primeiro tópico dela */
+  .folha .parte-f { break-before: page; margin-top: 0; }
+  .folha .parte-f + h2.topico-folha { break-before: auto; margin-top: 14px; }
   .folha thead { display: table-header-group; }
   .folha h2.quebra, .folha .parte-f.quebra { break-before: page; }
   .folha .parte-f, .folha h3 { break-after: avoid; }
@@ -797,7 +808,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 <body>
 <!-- Plataforma: página (topo, trilha, área da tela, faixa), namespace e formatação -->
 <script>
-/* ==== plataforma v0.6.0: js/interface/pagina.js ==== */
+/* ==== plataforma v0.6.1: js/interface/pagina.js ==== */
 /* Plataforma HVAC. Página comum: topo (marca, modo aprendizado, tema, comandos), trilha, área da tela, faixa de resultado,
    camada sobre a tela, campo de arquivo e captura de erro de JavaScript. Desde a v0.4.0, também o botão Menu, a barra de
    passos e o balão de dica do celular: nascem ocultos (base.css) e só aparecem em tela estreita.
@@ -806,7 +817,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.plataforma = { versao: '0.6.0' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
+  H.plataforma = { versao: '0.6.1' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
 
   /* Erro de JavaScript fica visível na página (e aparece no teste automático) */
   window.onerror = function (msg, arq, linha) {
@@ -843,12 +854,12 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.6.0: js/nucleo.js ==== */
+/* ==== plataforma v0.6.1: js/nucleo.js ==== */
 /* Namespace único do app. Módulos: dados (tabelas), util, motor (cálculo, sem DOM), ui (tela). */
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.9.4';
+  H.versao = '0.9.5';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -864,7 +875,7 @@ window.HVAC.modo = 'agua';
 
 </script>
 <script>
-/* ==== plataforma v0.6.0: js/util/formatacao.js ==== */
+/* ==== plataforma v0.6.1: js/util/formatacao.js ==== */
 /* Formatação numérica (padrão brasileiro: vírgula decimal) e utilidades de texto. */
 (function (H) {
   'use strict';
@@ -6311,7 +6322,7 @@ window.HVAC = window.HVAC || {};
 </script>
 <!-- Plataforma: componentes e casca -->
 <script>
-/* ==== plataforma v0.6.0: js/interface/componentes.js ==== */
+/* ==== plataforma v0.6.1: js/interface/componentes.js ==== */
 /* Plataforma HVAC. Componentes do guia de interface: campo com estado, selos, valor calculado, seletor, segmentado, passos,
    cabeçalho de tela, indicador, bloco recolhível, barras, tabela de passos e, desde a v0.4.0, a lista de cartões do celular.
    Só montam HTML; não conhecem app nem motor.
@@ -6473,7 +6484,7 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.6.0: js/interface/casca.js ==== */
+/* ==== plataforma v0.6.1: js/interface/casca.js ==== */
 /* Plataforma HVAC. Casca comum dos apps: estado, armazenamento, rotas, trilha, faixa de resultado, gaveta, janela, paleta de comandos,
    tema, modo aprendizado, arquivo de projeto com relatório de importação e impressão do memorial; desde a v0.4.0, o celular
    (Menu, barra de passos, Voltar, dica por toque, tabelas que rolam, memorial em escala, teclado), só com a tela estreita.
@@ -6691,6 +6702,7 @@ window.HVAC = window.HVAC || {};
     var main = document.getElementById('tela');
     main.className = rota.larga ? 'larga' : '';
     main.innerHTML = html;
+    marcarTopicos(main);
     document.getElementById('trilha').innerHTML = htmlTrilha(R);
     var hf = htmlFaixa(R);
     document.getElementById('faixa').innerHTML = hf;
@@ -7042,6 +7054,18 @@ window.HVAC = window.HVAC || {};
     });
   }
   window.addEventListener('resize', function () { if (celular()) escalarFolhas(); });
+
+  // Memorial (v0.6.1, Francisco, 2026-11-17): no papel, cada tópico numerado ("3. Resumo") começa numa folha nova; o primeiro
+  // de cada folha fica logo abaixo do cabeçalho. A classe só tem efeito na impressão (impressao.css); a tela não muda.
+  function marcarTopicos(raiz) {
+    Array.prototype.forEach.call(raiz.querySelectorAll('.folha'), function (f) {
+      if (f.parentNode.closest('.folha')) return;
+      var n = 0;
+      Array.prototype.forEach.call(f.querySelectorAll('h2'), function (h) {
+        if (/^\s*\d+\.\s/.test(h.textContent) && n++) h.classList.add('topico-folha');
+      });
+    });
+  }
 
   // Depois de cada desenho: barra de passos, quadros das tabelas e folha em escala; na tela larga, só garante a barra vazia
   function ajustarCelular(R) {
