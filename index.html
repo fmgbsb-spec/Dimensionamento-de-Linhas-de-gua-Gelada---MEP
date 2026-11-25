@@ -31,7 +31,7 @@
 <!-- Água Gelada HVAC (separado do redes-hvac-web v0.9.5 na E4, 2026-11-23).
      Plataforma comum (_plataforma-hvac): tokens, base, componentes e folha do memorial. O build embute tudo no HTML único. -->
 <style>
-/* ==== plataforma v0.6.1: css/base.css ==== */
+/* ==== plataforma v0.7.0: css/base.css ==== */
 /* ---- importado: fontes.css ---- */
 /* Fontes embutidas (gerado por _plataforma-hvac\codigo\ferramentas\gera_fontes.py; não editar à mão).
    Arquivos woff2 do Google Fonts, subconjunto latin, sem alteração; letras fora dele usam a fonte seguinte da lista.
@@ -522,7 +522,7 @@ button.kpi-c:hover { border-color: var(--prim); }
 
 </style>
 <style>
-/* ==== plataforma v0.6.1: css/impressao.css ==== */
+/* ==== plataforma v0.7.0: css/impressao.css ==== */
 /* Plataforma HVAC: memorial em formato de folha e regras de impressão (o PDF sai pela impressão do navegador). */
 /* v0.5.0: a folha é papel e não flutua (sem sombra, só a borda); dentro dela ficam as fontes e os pesos da v0.4.1, para o PDF
    sair igual (a tela troca para IBM Plex; o memorial muda de fonte só numa etapa própria, com o Francisco) */
@@ -808,7 +808,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 <body>
 <!-- Plataforma: página (topo, trilha, área da tela, faixa), namespace e formatação -->
 <script>
-/* ==== plataforma v0.6.1: js/interface/pagina.js ==== */
+/* ==== plataforma v0.7.0: js/interface/pagina.js ==== */
 /* Plataforma HVAC. Página comum: topo (marca, modo aprendizado, tema, comandos), trilha, área da tela, faixa de resultado,
    camada sobre a tela, campo de arquivo e captura de erro de JavaScript. Desde a v0.4.0, também o botão Menu, a barra de
    passos e o balão de dica do celular: nascem ocultos (base.css) e só aparecem em tela estreita.
@@ -817,7 +817,7 @@ main:has(.folha.paisagem) { max-width: 1240px; }
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.plataforma = { versao: '0.6.1' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
+  H.plataforma = { versao: '0.7.0' };   // o build do app grava aqui a versão de _plataforma-hvac\codigo\VERSAO.txt
 
   /* Erro de JavaScript fica visível na página (e aparece no teste automático) */
   window.onerror = function (msg, arq, linha) {
@@ -854,12 +854,12 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.6.1: js/nucleo.js ==== */
+/* ==== plataforma v0.7.0: js/nucleo.js ==== */
 /* Namespace único do app. Módulos: dados (tabelas), util, motor (cálculo, sem DOM), ui (tela). */
 window.HVAC = window.HVAC || {};
 (function (H) {
   'use strict';
-  H.versao = '0.10.0';
+  H.versao = '0.11.0';
   H.dados = H.dados || {};
   H.util = H.util || {};
   H.motor = H.motor || {};
@@ -868,7 +868,7 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.6.1: js/util/formatacao.js ==== */
+/* ==== plataforma v0.7.0: js/util/formatacao.js ==== */
 /* Formatação numérica (padrão brasileiro: vírgula decimal) e utilidades de texto. */
 (function (H) {
   'use strict';
@@ -3916,7 +3916,7 @@ window.HVAC = window.HVAC || {};
 </script>
 <!-- Plataforma: componentes e casca -->
 <script>
-/* ==== plataforma v0.6.1: js/interface/componentes.js ==== */
+/* ==== plataforma v0.7.0: js/interface/componentes.js ==== */
 /* Plataforma HVAC. Componentes do guia de interface: campo com estado, selos, valor calculado, seletor, segmentado, passos,
    cabeçalho de tela, indicador, bloco recolhível, barras, tabela de passos e, desde a v0.4.0, a lista de cartões do celular.
    Só montam HTML; não conhecem app nem motor.
@@ -4078,7 +4078,7 @@ window.HVAC = window.HVAC || {};
 
 </script>
 <script>
-/* ==== plataforma v0.6.1: js/interface/casca.js ==== */
+/* ==== plataforma v0.7.0: js/interface/casca.js ==== */
 /* Plataforma HVAC. Casca comum dos apps: estado, armazenamento, rotas, trilha, faixa de resultado, gaveta, janela, paleta de comandos,
    tema, modo aprendizado, arquivo de projeto com relatório de importação e impressão do memorial; desde a v0.4.0, o celular
    (Menu, barra de passos, Voltar, dica por toque, tabelas que rolam, memorial em escala, teclado), só com a tela estreita.
@@ -4372,11 +4372,28 @@ window.HVAC = window.HVAC || {};
   }
   function abrirPaleta() { U.sobre = { tipo: 'paleta', busca: '', sel: 0 }; desenharSobre(); document.getElementById('paleta-busca').focus(); }
 
-  function gerarPdf() {
+  /* Gerar PDF (v0.7.0): com A.faltaPreencher(E, R) → [{ onde, texto, rota }] não vazio, abre a janela "Falta preencher" (lista,
+     "Voltar e preencher", "Gerar assim mesmo"); sem o item no manifesto, ou com a lista vazia, imprime direto, como antes. */
+  function imprimir(depois) {   // depois: espera o desenho que fecha a janela
     var r = rotaQueImprime();
     if (!r) return;
     if (U.tela !== r) { location.hash = '#/' + r; setTimeout(function () { window.print(); }, 150); }
+    else if (depois) setTimeout(function () { window.print(); }, 0);
     else window.print();
+  }
+  function htmlFaltaPreencher(L) {
+    return '<h2>Falta preencher</h2><ul class="falta-preencher" style="margin:10px 0 0;padding-left:20px">' + L.map(function (x, i) {
+        return '<li style="margin:4px 0">' + (x.onde ? esc(x.onde) + ': ' : '') + esc(x.texto) + '.' +
+          (x.rota ? ' <a href="' + esc(x.rota) + '" data-acao="pdf-ir" data-i="' + i + '">Abrir</a>' : '') + '</li>';
+      }).join('') + '</ul>' +
+      '<div class="acoes" style="margin-top:14px"><button type="button" class="botao prim" data-acao="fechar">Voltar e preencher</button>' +
+      '<button type="button" class="botao" data-acao="pdf-assim">Gerar assim mesmo</button></div>';
+  }
+  function gerarPdf() {
+    if (!rotaQueImprime()) return;
+    var L = A.faltaPreencher ? A.faltaPreencher(E, A.calcular ? A.calcular(E) : null) || [] : [];
+    if (L.length) { U.sobre = { tipo: 'janela', html: htmlFaltaPreencher(L), falta: L }; return; }
+    imprimir();
   }
   /* Texto do arquivo de projeto como é salvo: o projeto, o envelope (formato, versaoFormato, versaoApp e, logo depois, versaoPlataforma)
      e os blocos que A.arquivo.aoSalvar(E, R) devolver (ex.: { resultados: {...} }). Os blocos entram só nesta cópia: E não os recebe.
@@ -4491,6 +4508,12 @@ window.HVAC = window.HVAC || {};
     paleta: function () { U.sobre = { tipo: 'paleta', busca: '', sel: 0 }; return 'paleta-busca'; },
     comando: function (el) { var c = comandosFiltrados()[+el.getAttribute('data-i')]; U.sobre = null; if (c) c.fn(); },
     pdf: gerarPdf,
+    'pdf-assim': function () { U.sobre = null; imprimir(true); },                     // v0.7.0: janela "Falta preencher"
+    'pdf-ir': function (el) {
+      var x = U.sobre && U.sobre.falta ? U.sobre.falta[+el.getAttribute('data-i')] : null;
+      U.sobre = null;
+      if (x && x.rota && location.hash !== x.rota) location.hash = x.rota;
+    },
     salvar: salvarArquivo,
     'abrir-arquivo': function () { document.getElementById('arquivo').click(); },
     ajuda: function () { if (A.ajuda && A.ajuda.length) U.sobre = { tipo: 'janela', html: htmlAjuda() }; },
@@ -4896,7 +4919,7 @@ window.HVAC = window.HVAC || {};
         '<li><b>2</b><span><a href="#/unidades">Unidades</a>: cadastro dos equipamentos (fancoil, built-in, self), com o calor total, que define a vazão de água. Importa da carga térmica.</span></li>' +
         '<li><b>3</b><span><a href="#/rede">Água gelada</a>: uma linha por trecho, com o resultado na própria linha. A linha abre o trecho, com as conexões, os equipamentos e a conta passo a passo.</span></li>' +
         '<li><b>4</b><span><a href="#/resultados">Resultados</a>: bomba, bomba existente, circuito crítico, balanceamento e menor DN. Cada número abre a conta.</span></li>' +
-        '<li><b>5</b><span><a href="#/memorial">Memorial</a>: o que ver antes de emitir e a folha para imprimir, com método, premissas, trechos, bomba e referências.</span></li>' +
+        '<li><b>5</b><span><a href="#/memorial">Memorial</a>: a folha para imprimir, com método, premissas, trechos, bomba e referências.</span></li>' +
       '</ul><p class="fraco" style="margin-top:12px">Dados do app: <a href="#/referencias" data-g="atalho-referencias">Referências</a>, com as tabelas da água usadas nas contas, a fonte e o selo de cada linha. ' +
         'Os dutos de ar ficam no app Dutos HVAC. Arquivos do Redes HVAC Web abrem aqui, sem os dutos.</p></div>' +
       C.aprender('O projeto fica guardado neste navegador. Para levar a outro computador ou guardar uma revisão, use "Salvar arquivo": o arquivo .json abre de novo em "Abrir arquivo".');
@@ -6565,29 +6588,19 @@ window.HVAC = window.HVAC || {};
   X.pendencias = function (E, R) { var A = antesDeEmitir(E, R); return A.erros.concat(A.revisar, A.conferir); };
   X.antesDeEmitir = antesDeEmitir;
 
-  // R6 (celular): em tela estreita cada grupo vira um <details>, com a contagem no título; "Erros de dados" e "Trechos a revisar"
-  // (aberto = true) começam abertos, os outros recolhidos. Na tela larga a marcação é a de antes.
-  function grupoEmitir(g, titulo, frase, itens, vazio, aberto) {
-    var cab = '<h3>' + esc(titulo) + ' <span class="fraco">(' + itens.length + ')</span></h3>';
-    var corpo = (itens.length ? '<p class="fraco">' + esc(frase) + '</p><ul class="lista-emitir">' + itens.map(function (x) {
-        return '<li><span>' + esc(x.texto) + '.' + (x.href ? ' <a href="' + x.href + '">' + esc(x.onde) + '</a>' : '') + '</span>' + (x.fonte ? '<small>' + esc(x.fonte) + '</small>' : '') + '</li>';
-      }).join('') + '</ul>' : '<p class="fraco">' + esc(vazio) + '</p>');
-    if (H.ui.api.celular()) { return '<details class="emitir-grupo" data-g="emitir-' + g + '"' + (aberto ? ' open' : '') + '><summary>' + cab + '</summary>' + corpo + '</details>'; }
-    return '<div class="emitir-grupo" data-g="emitir-' + g + '">' + cab + corpo + '</div>';
+  /* 0.11.0 (plataforma 0.7.0, pedido do Francisco de 25/11): sai o cartão "Antes de emitir" da tela; ao gerar o PDF, a casca abre
+     a janela "Falta preencher" com esta lista: campo da Identificação em branco e erro de dados (o que deixa a folha incompleta).
+     Os alertas de engenharia (DN a revisar, bomba existente) ficam nas telas de cálculo. */
+  var IDENT = ['nome', 'cliente', 'local', 'responsavel', 'registro', 'revisao', 'data'];
+  function faltaPreencher(E, R) {
+    var p = E.projeto || {}, cp = H.dados.campos.projeto, L = [];
+    IDENT.forEach(function (k) {
+      if (cp[k] && String(p[k] === null || p[k] === undefined ? '' : p[k]).trim() === '') { L.push({ onde: 'Projeto', texto: cp[k].rotulo + ' em branco', rota: '#/projeto' }); }
+    });
+    antesDeEmitir(E, R).erros.forEach(function (x) { L.push({ onde: '', texto: x.texto, rota: x.href || '' }); });
+    return L;
   }
-  function cartaoEmitir(E, R) {
-    var A = antesDeEmitir(E, R), mod = modulos(E, R);
-    return '<div class="cartao" data-g="antes-de-emitir"><h2>Antes de emitir</h2>' +
-      '<p class="fraco" data-g="emitir-modulos">Fazem parte deste projeto: ' + (mod.agua ? 'a rede de água gelada. ' : 'nenhuma rede. ') + '</p>' +
-      (A.erros.length ? '<p class="msg-tela erro">Há erro de dados: a folha sai marcada como incompleta, sem a bomba ou o ventilador, o crítico e o balanceamento da rede com erro.</p>' : '') +
-      grupoEmitir('erros', 'Erros de dados', 'Sem corrigir estes itens a rede não é calculada por inteiro.', A.erros, 'Nenhum.', true) +
-      grupoEmitir('revisar', A.linhaBomba ? 'Trechos e bomba a revisar' : 'Trechos a revisar',
-        'Água: o DN em uso passa do limite de velocidade ou de perda por metro; com a bomba existente informada, a vazão fora da tolerância ou a altura da rede acima da disponível. ', A.revisar, 'Nenhum.', true) +
-      grupoEmitir('conferir', 'Dados com CONFERIR em uso', 'Valores sem documento-fonte conferido que entram nesta conta. Confirme cada um no catálogo ou na fonte antes de emitir.', A.conferir, 'Nenhum.') +
-      grupoEmitir('premissas', 'Premissas em uso', 'Escolhas declaradas, que valem enquanto o projetista não informar outro valor.', A.premissas, 'Nenhuma.') +
-      grupoEmitir('alterados', 'Valores alterados em relação ao padrão', 'Informados pelo projetista no lugar do padrão ou do valor de tabela.', A.alterados, 'Nenhum: valem os padrões do app.') +
-      '</div>';
-  }
+  X.faltaPreencher = faltaPreencher;
 
   // ------------------------------------------------------------ a folha
   function hoje() {
@@ -6781,11 +6794,11 @@ window.HVAC = window.HVAC || {};
 
   // ------------------------------------------------------------ a tela
   T.memorial = function (E, U, R) {
-    return '<div class="nao-imprime">' + C.cabeca(X.passo('memorial'), 'Memorial', 'O que ver antes de emitir e a folha para imprimir, em paisagem: identificação, unidades, ' +
+    return '<div class="nao-imprime">' + C.cabeca(X.passo('memorial'), 'Memorial', 'A folha para imprimir, em paisagem: identificação, unidades, ' +
         'água gelada (método, premissas, trechos, bomba e balanceamento).') +
       '<div class="acoes" style="margin-bottom:16px"><button class="botao prim" data-acao="pdf">Gerar PDF</button><button class="botao" data-acao="salvar">Salvar arquivo do projeto</button>' +
         '<span class="fraco">No diálogo de impressão, escolha "Salvar como PDF". A folha já sai em A4 deitado.</span></div>' +
-      cartaoEmitir(E, R) + '</div>' + folha(E, R);
+      '</div>' + folha(E, R);
   };
 })(window.HVAC);
 
@@ -7323,8 +7336,10 @@ window.HVAC = window.HVAC || {};
       { r: 'rede', t: 'Água gelada', s: function (E, R) { return X.plural(R.contagem.trechos, 'trecho', 'trechos') + (R.contagem.dados ? ' · ' + R.contagem.dados + ' com erro' : ''); },
         pend: function (E, R) { return R.contagem.dados > 0 || R.contagem.trechos === 0; } },
       { r: 'resultados', t: 'Resultados', s: function (E, R) { return X.valido(R) ? f.num(R.bomba.h, 2) + ' mca' : '—'; } },
-      { r: 'memorial', t: 'Memorial', s: function (E, R) { var q = X.pendencias(E, R).length; return q ? X.plural(q, 'item a ver', 'itens a ver') : 'pronto para emitir'; } }
+      { r: 'memorial', t: 'Memorial', s: function (E, R) { var q = X.faltaPreencher(E, R).length; return q ? X.plural(q, 'item a preencher', 'itens a preencher') : 'pronto para emitir'; } }
     ],
+    // plataforma 0.7.0: o que falta preencher abre a janela da casca ao gerar o PDF (memorial.js)
+    faltaPreencher: function (E, R) { return X.faltaPreencher(E, R); },
     arquivo: {
       formato: M.formato.FORMATO,
       versao: M.formato.VERSAO_FORMATO,
